@@ -1,0 +1,396 @@
+Sure! Let's go through each of these linked list problems and provide solutions in Java, Python, C++, JavaScript, and Go, with line-by-line explanations.
+
+### 1. Reverse Linked List
+
+#### Java
+```java
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int x) { val = x; }
+}
+
+public class ReverseLinkedList {
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null; // Initialize previous node to null
+        ListNode curr = head; // Start with the head of the list
+        while (curr != null) { // Iterate through the list
+            ListNode nextTemp = curr.next; // Store the next node
+            curr.next = prev; // Reverse the current node's pointer
+            prev = curr; // Move the previous node to the current node
+            curr = nextTemp; // Move to the next node in the list
+        }
+        return prev; // Return the new head of the reversed list
+    }
+}
+```
+
+#### Python
+```python
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        prev = None # Initialize previous node to null
+        curr = head # Start with the head of the list
+        while curr: # Iterate through the list
+            next_temp = curr.next # Store the next node
+            curr.next = prev # Reverse the current node's pointer
+            prev = curr # Move the previous node to the current node
+            curr = next_temp # Move to the next node in the list
+        return prev # Return the new head of the reversed list
+```
+
+#### C++
+```cpp
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* prev = NULL; // Initialize previous node to null
+        ListNode* curr = head; // Start with the head of the list
+        while (curr != NULL) { // Iterate through the list
+            ListNode* nextTemp = curr->next; // Store the next node
+            curr->next = prev; // Reverse the current node's pointer
+            prev = curr; // Move the previous node to the current node
+            curr = nextTemp; // Move to the next node in the list
+        }
+        return prev; // Return the new head of the reversed list
+    }
+};
+```
+
+#### JavaScript
+```javascript
+function ListNode(val) {
+    this.val = val;
+    this.next = null;
+}
+
+var reverseList = function(head) {
+    let prev = null; // Initialize previous node to null
+    let curr = head; // Start with the head of the list
+    while (curr !== null) { // Iterate through the list
+        let nextTemp = curr.next; // Store the next node
+        curr.next = prev; // Reverse the current node's pointer
+        prev = curr; // Move the previous node to the current node
+        curr = nextTemp; // Move to the next node in the list
+    }
+    return prev; // Return the new head of the reversed list
+};
+```
+
+#### Go
+```go
+type ListNode struct {
+    Val  int
+    Next *ListNode
+}
+
+func reverseList(head *ListNode) *ListNode {
+    var prev *ListNode // Initialize previous node to null
+    curr := head // Start with the head of the list
+    for curr != nil { // Iterate through the list
+        nextTemp := curr.Next // Store the next node
+        curr.Next = prev // Reverse the current node's pointer
+        prev = curr // Move the previous node to the current node
+        curr = nextTemp // Move to the next node in the list
+    }
+    return prev // Return the new head of the reversed list
+}
+```
+
+### 2. Detect Cycle in Linked List
+
+#### Java
+```java
+public class DetectCycle {
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) return false; // Check for empty or single node list
+        ListNode slow = head; // Initialize slow pointer
+        ListNode fast = head.next; // Initialize fast pointer
+        while (slow != fast) { // Iterate until slow and fast pointers meet
+            if (fast == null || fast.next == null) return false; // Check if fast pointer reaches the end
+            slow = slow.next; // Move slow pointer one step
+            fast = fast.next.next; // Move fast pointer two steps
+        }
+        return true; // Cycle detected
+    }
+}
+```
+
+#### Python
+```python
+class Solution:
+    def hasCycle(self, head: ListNode) -> bool:
+        if not head or not head.next:
+            return False # Check for empty or single node list
+        slow, fast = head, head.next # Initialize slow and fast pointers
+        while slow != fast: # Iterate until slow and fast pointers meet
+            if not fast or not fast.next:
+                return False # Check if fast pointer reaches the end
+            slow = slow.next # Move slow pointer one step
+            fast = fast.next.next # Move fast pointer two steps
+        return True # Cycle detected
+```
+
+#### C++
+```cpp
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        if (head == NULL || head->next == NULL) return false; // Check for empty or single node list
+        ListNode *slow = head; // Initialize slow pointer
+        ListNode *fast = head->next; // Initialize fast pointer
+        while (slow != fast) { // Iterate until slow and fast pointers meet
+            if (fast == NULL || fast->next == NULL) return false; // Check if fast pointer reaches the end
+            slow = slow->next; // Move slow pointer one step
+            fast = fast->next->next; // Move fast pointer two steps
+        }
+        return true; // Cycle detected
+    }
+};
+```
+
+#### JavaScript
+```javascript
+var hasCycle = function(head) {
+    if (!head || !head.next) return false; // Check for empty or single node list
+    let slow = head; // Initialize slow pointer
+    let fast = head.next; // Initialize fast pointer
+    while (slow !== fast) { // Iterate until slow and fast pointers meet
+        if (!fast || !fast.next) return false; // Check if fast pointer reaches the end
+        slow = slow.next; // Move slow pointer one step
+        fast = fast.next.next; // Move fast pointer two steps
+    }
+    return true; // Cycle detected
+};
+```
+
+#### Go
+```go
+func hasCycle(head *ListNode) bool {
+    if head == nil || head.Next == nil {
+        return false // Check for empty or single node list
+    }
+    slow, fast := head, head.Next // Initialize slow and fast pointers
+    for slow != fast { // Iterate until slow and fast pointers meet
+        if fast == nil || fast.Next == nil {
+            return false // Check if fast pointer reaches the end
+        }
+        slow = slow.Next // Move slow pointer one step
+        fast = fast.Next.Next // Move fast pointer two steps
+    }
+    return true // Cycle detected
+}
+```
+
+### 3. Merge Two Sorted Lists
+
+#### Java
+```java
+public class MergeTwoSortedLists {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0); // Create a dummy node to simplify the merge process
+        ListNode current = dummy; // Initialize current pointer to dummy node
+        while (l1 != null && l2 != null) { // Iterate while both lists are not empty
+            if (l1.val < l2.val) { // Compare values of l1 and l2
+                current.next = l1; // Point current node to l1
+                l1 = l1.next; // Move l1 to the next node
+            } else {
+                current.next = l2; // Point current node to l2
+                l2 = l2.next; // Move l2 to the next node
+            }
+            current = current.next; // Move current to the next node
+        }
+        if (l1 != null) current.next = l1; // If l1 is not empty, append it to the merged list
+        if (l2 != null) current.next = l2; // If l2 is not empty, append it to the merged list
+        return dummy.next; // Return the merged list starting from the next node of dummy
+    }
+}
+```
+
+#### Python
+```python
+class Solution:
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(0) # Create a dummy node to simplify the merge process
+        current = dummy # Initialize current pointer to dummy node
+        while l1 and l2: # Iterate while both lists are not empty
+            if l1.val < l2.val: # Compare values of l1 and l2
+                current.next = l1 # Point current node to l1
+                l1 = l1.next # Move l1 to the next node
+            else:
+                current.next = l2 # Point current node to l2
+                l2 = l2.next # Move l2 to the next node
+            current = current.next # Move current to the next node
+        current.next = l1 if l1 else
+
+
+
+
+
+
+        Got it! Let's go through the "Add Two Numbers" problem for linked lists in Java, Python, C++, JavaScript, and Go, with line-by-line explanations.
+
+### 4. Add Two Numbers
+
+#### Java
+```java
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int x) { val = x; }
+}
+
+public class AddTwoNumbers {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0); // Create a dummy node to simplify the addition process
+        ListNode p = l1, q = l2, current = dummy; // Initialize pointers for l1, l2, and the result list
+        int carry = 0; // Initialize carry to 0
+        while (p != null || q != null) { // Iterate while either list is not empty
+            int x = (p != null) ? p.val : 0; // Get the value from l1, or 0 if l1 is exhausted
+            int y = (q != null) ? q.val : 0; // Get the value from l2, or 0 if l2 is exhausted
+            int sum = carry + x + y; // Calculate the sum of the values and the carry
+            carry = sum / 10; // Update the carry for the next iteration
+            current.next = new ListNode(sum % 10); // Create a new node with the digit value and append it to the result list
+            current = current.next; // Move to the next node in the result list
+            if (p != null) p = p.next; // Move to the next node in l1
+            if (q != null) q = q.next; // Move to the next node in l2
+        }
+        if (carry > 0) {
+            current.next = new ListNode(carry); // If there's a remaining carry, create a new node for it
+        }
+        return dummy.next; // Return the result list starting from the next node of dummy
+    }
+}
+```
+
+#### Python
+```python
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = ListNode(0) # Create a dummy node to simplify the addition process
+        current = dummy # Initialize current pointer to dummy node
+        carry = 0 # Initialize carry to 0
+        while l1 or l2: # Iterate while either list is not empty
+            x = l1.val if l1 else 0 # Get the value from l1, or 0 if l1 is exhausted
+            y = l2.val if l2 else 0 # Get the value from l2, or 0 if l2 is exhausted
+            sum = carry + x + y # Calculate the sum of the values and the carry
+            carry = sum // 10 # Update the carry for the next iteration
+            current.next = ListNode(sum % 10) # Create a new node with the digit value and append it to the result list
+            current = current.next # Move to the next node in the result list
+            if l1: l1 = l1.next # Move to the next node in l1
+            if l2: l2 = l2.next # Move to the next node in l2
+        if carry > 0:
+            current.next = ListNode(carry) # If there's a remaining carry, create a new node for it
+        return dummy.next # Return the result list starting from the next node of dummy
+```
+
+#### C++
+```cpp
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+
+class Solution {
+public:
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode dummy(0); // Create a dummy node to simplify the addition process
+        ListNode* current = &dummy; // Initialize current pointer to dummy node
+        int carry = 0; // Initialize carry to 0
+        while (l1 != NULL || l2 != NULL) { // Iterate while either list is not empty
+            int x = (l1 != NULL) ? l1->val : 0; // Get the value from l1, or 0 if l1 is exhausted
+            int y = (l2 != NULL) ? l2->val : 0; // Get the value from l2, or 0 if l2 is exhausted
+            int sum = carry + x + y; // Calculate the sum of the values and the carry
+            carry = sum / 10; // Update the carry for the next iteration
+            current->next = new ListNode(sum % 10); // Create a new node with the digit value and append it to the result list
+            current = current->next; // Move to the next node in the result list
+            if (l1 != NULL) l1 = l1->next; // Move to the next node in l1
+            if (l2 != NULL) l2 = l2->next; // Move to the next node in l2
+        }
+        if (carry > 0) {
+            current->next = new ListNode(carry); // If there's a remaining carry, create a new node for it
+        }
+        return dummy.next; // Return the result list starting from the next node of dummy
+    }
+};
+```
+
+#### JavaScript
+```javascript
+function ListNode(val) {
+    this.val = val;
+    this.next = null;
+}
+
+var addTwoNumbers = function(l1, l2) {
+    let dummy = new ListNode(0); // Create a dummy node to simplify the addition process
+    let current = dummy; // Initialize current pointer to dummy node
+    let carry = 0; // Initialize carry to 0
+    while (l1 !== null || l2 !== null) { // Iterate while either list is not empty
+        let x = (l1 !== null) ? l1.val : 0; // Get the value from l1, or 0 if l1 is exhausted
+        let y = (l2 !== null) ? l2.val : 0; // Get the value from l2, or 0 if l2 is exhausted
+        let sum = carry + x + y; // Calculate the sum of the values and the carry
+        carry = Math.floor(sum / 10); // Update the carry for the next iteration
+        current.next = new ListNode(sum % 10); // Create a new node with the digit value and append it to the result list
+        current = current.next; // Move to the next node in the result list
+        if (l1 !== null) l1 = l1.next; // Move to the next node in l1
+        if (l2 !== null) l2 = l2.next; // Move to the next node in l2
+    }
+    if (carry > 0) {
+        current.next = new ListNode(carry); // If there's a remaining carry, create a new node for it
+    }
+    return dummy.next; // Return the result list starting from the next node of dummy
+};
+```
+
+#### Go
+```go
+type ListNode struct {
+    Val  int
+    Next *ListNode
+}
+
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+    dummy := &ListNode{} // Create a dummy node to simplify the addition process
+    current := dummy // Initialize current pointer to dummy node
+    carry := 0 // Initialize carry to 0
+    for l1 != nil || l2 != nil { // Iterate while either list is not empty
+        x := 0
+        if l1 != nil {
+            x = l1.Val // Get the value from l1, or 0 if l1 is exhausted
+            l1 = l1.Next // Move to the next node in l1
+        }
+        y := 0
+        if l2 != nil {
+            y = l2.Val // Get the value from l2, or 0 if l2 is exhausted
+            l2 = l2.Next // Move to the next node in l2
+        }
+        sum := carry + x + y // Calculate the sum of the values and the carry
+        carry = sum / 10 // Update the carry for the next iteration
+        current.Next = &ListNode{Val: sum % 10} // Create a new node with the digit value and append it to the result list
+        current = current.Next // Move to the next node in the result list
+    }
+    if carry > 0 {
+        current.Next = &ListNode{Val: carry} // If there's a remaining carry, create a new node for it
+    }
+    return dummy.Next // Return the result list starting from the next node of dummy
+}
+```
+

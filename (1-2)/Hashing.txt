@@ -1,0 +1,289 @@
+Let's go through **Hashing** problems with Java, Python, C++, and JavaScript implementations.
+
+---
+
+## **1. Subarray Sum Equals K**
+**Problem:** Given an array of integers `nums` and an integer `k`, return the total number of continuous subarrays whose sum equals `k`.
+
+### **Java**
+```java
+import java.util.HashMap;
+
+public class SubarraySumK {
+    public int subarraySum(int[] nums, int k) {
+        HashMap<Integer, Integer> prefixSum = new HashMap<>();
+        prefixSum.put(0, 1);
+        int count = 0, sum = 0;
+
+        for (int num : nums) {
+            sum += num;
+            if (prefixSum.containsKey(sum - k)) {
+                count += prefixSum.get(sum - k);
+            }
+            prefixSum.put(sum, prefixSum.getOrDefault(sum, 0) + 1);
+        }
+        return count;
+    }
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+### **Python**
+```python
+def subarray_sum(nums, k):
+    prefix_sum = {0: 1}
+    count, sum_ = 0, 0
+
+    for num in nums:
+        sum_ += num
+        count += prefix_sum.get(sum_ - k, 0)
+        prefix_sum[sum_] = prefix_sum.get(sum_, 0) + 1
+
+    return count
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+### **C++**
+```cpp
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+int subarraySum(vector<int>& nums, int k) {
+    unordered_map<int, int> prefixSum = {{0, 1}};
+    int count = 0, sum = 0;
+
+    for (int num : nums) {
+        sum += num;
+        count += prefixSum[sum - k];
+        prefixSum[sum]++;
+    }
+    return count;
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+### **JavaScript**
+```javascript
+var subarraySum = function(nums, k) {
+    let prefixSum = { 0: 1 };
+    let count = 0, sum = 0;
+
+    for (let num of nums) {
+        sum += num;
+        if (prefixSum[sum - k] !== undefined) {
+            count += prefixSum[sum - k];
+        }
+        prefixSum[sum] = (prefixSum[sum] || 0) + 1;
+    }
+    return count;
+};
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+## **2. Group Anagrams**
+**Problem:** Given an array of strings, group anagrams together.
+
+### **Java**
+```java
+import java.util.*;
+
+public class GroupAnagrams {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        HashMap<String, List<String>> map = new HashMap<>();
+        
+        for (String s : strs) {
+            char[] arr = s.toCharArray();
+            Arrays.sort(arr);
+            String key = new String(arr);
+            map.putIfAbsent(key, new ArrayList<>());
+            map.get(key).add(s);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+```
+**Time Complexity:** O(n * m log m)  
+**Space Complexity:** O(n)  
+
+---
+
+### **Python**
+```python
+from collections import defaultdict
+
+def group_anagrams(strs):
+    anagrams = defaultdict(list)
+    
+    for s in strs:
+        key = "".join(sorted(s))
+        anagrams[key].append(s)
+    
+    return list(anagrams.values())
+```
+**Time Complexity:** O(n * m log m)  
+**Space Complexity:** O(n)  
+
+---
+
+### **C++**
+```cpp
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <algorithm>
+
+using namespace std;
+
+vector<vector<string>> groupAnagrams(vector<string>& strs) {
+    unordered_map<string, vector<string>> anagramGroups;
+    
+    for (string s : strs) {
+        string key = s;
+        sort(key.begin(), key.end());
+        anagramGroups[key].push_back(s);
+    }
+    
+    vector<vector<string>> result;
+    for (auto& pair : anagramGroups) {
+        result.push_back(pair.second);
+    }
+    return result;
+}
+```
+**Time Complexity:** O(n * m log m)  
+**Space Complexity:** O(n)  
+
+---
+
+### **JavaScript**
+```javascript
+var groupAnagrams = function(strs) {
+    let map = new Map();
+    
+    for (let s of strs) {
+        let key = s.split('').sort().join('');
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(s);
+    }
+    
+    return Array.from(map.values());
+};
+```
+**Time Complexity:** O(n * m log m)  
+**Space Complexity:** O(n)  
+
+---
+
+## **3. Top K Frequent Elements**
+**Problem:** Given an array and integer `k`, return the `k` most frequent elements.
+
+### **Java**
+```java
+import java.util.*;
+
+public class TopKFrequent {
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> freqMap = new HashMap<>();
+        for (int num : nums) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+
+        PriorityQueue<Integer> heap = new PriorityQueue<>((a, b) -> freqMap.get(a) - freqMap.get(b));
+
+        for (int num : freqMap.keySet()) {
+            heap.add(num);
+            if (heap.size() > k) heap.poll();
+        }
+
+        int[] result = new int[k];
+        for (int i = k - 1; i >= 0; i--) result[i] = heap.poll();
+        return result;
+    }
+}
+```
+**Time Complexity:** O(n log k)  
+**Space Complexity:** O(n)  
+
+---
+
+### **Python**
+```python
+from collections import Counter
+import heapq
+
+def top_k_frequent(nums, k):
+    return [num for num, _ in heapq.nlargest(k, Counter(nums).items(), key=lambda x: x[1])]
+```
+**Time Complexity:** O(n log k)  
+**Space Complexity:** O(n)  
+
+---
+
+### **C++**
+```cpp
+#include <vector>
+#include <unordered_map>
+#include <queue>
+
+using namespace std;
+
+vector<int> topKFrequent(vector<int>& nums, int k) {
+    unordered_map<int, int> freqMap;
+    for (int num : nums) {
+        freqMap[num]++;
+    }
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> minHeap;
+
+    for (auto& [num, freq] : freqMap) {
+        minHeap.push({freq, num});
+        if (minHeap.size() > k) minHeap.pop();
+    }
+
+    vector<int> result;
+    while (!minHeap.empty()) {
+        result.push_back(minHeap.top().second);
+        minHeap.pop();
+    }
+    return result;
+}
+```
+**Time Complexity:** O(n log k)  
+**Space Complexity:** O(n)  
+
+---
+
+### **JavaScript**
+```javascript
+var topKFrequent = function(nums, k) {
+    let freqMap = new Map();
+    for (let num of nums) {
+        freqMap.set(num, (freqMap.get(num) || 0) + 1);
+    }
+
+    return [...freqMap.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, k)
+        .map(x => x[0]);
+};
+```
+**Time Complexity:** O(n log k)  
+**Space Complexity:** O(n)  
+
+---
+
+These are the solutions for **Hashing problems** in Java, Python, C++, and JavaScript. Would you like more variations or additional problems? 🚀

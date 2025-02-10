@@ -1,0 +1,428 @@
+Sure! Let's go through each of these problems related to Stacks and Queues, providing solutions in Java, Python, C++, JavaScript, and Go, with explanations.
+
+### 1. Valid Parentheses
+
+#### Problem
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid. An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.
+
+#### Java
+```java
+import java.util.Stack;
+
+public class ValidParentheses {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (char c : s.toCharArray()) {
+            if (c == '(') stack.push(')');
+            else if (c == '{') stack.push('}');
+            else if (c == '[') stack.push(']');
+            else if (stack.isEmpty() || stack.pop() != c) return false;
+        }
+        return stack.isEmpty();
+    }
+}
+```
+
+#### Python
+```python
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        mapping = {')': '(', '}': '{', ']': '['}
+        for char in s:
+            if char in mapping:
+                top_element = stack.pop() if stack else '#'
+                if mapping[char] != top_element:
+                    return False
+            else:
+                stack.append(char)
+        return not stack
+```
+
+#### C++
+```cpp
+#include <stack>
+#include <unordered_map>
+
+class Solution {
+public:
+    bool isValid(string s) {
+        stack<char> stack;
+        unordered_map<char, char> mapping = {{')', '('}, {'}', '{'}, {']', '['}};
+        for (char c : s) {
+            if (mapping.count(c)) {
+                char top_element = stack.empty() ? '#' : stack.top();
+                stack.pop();
+                if (top_element != mapping[c]) return false;
+            } else {
+                stack.push(c);
+            }
+        }
+        return stack.empty();
+    }
+};
+```
+
+#### JavaScript
+```javascript
+var isValid = function(s) {
+    const stack = [];
+    const mapping = {')': '(', '}': '{', ']': '['};
+    for (let char of s) {
+        if (mapping[char]) {
+            const topElement = stack.length === 0 ? '#' : stack.pop();
+            if (topElement !== mapping[char]) return false;
+        } else {
+            stack.push(char);
+        }
+    }
+    return stack.length === 0;
+};
+```
+
+#### Go
+```go
+func isValid(s string) bool {
+    stack := []rune{}
+    mapping := map[rune]rune{')': '(', '}': '{', ']': '['}
+    for _, char := range s {
+        if open, ok := mapping[char]; ok {
+            if len(stack) == 0 || stack[len(stack)-1] != open {
+                return false
+            }
+            stack = stack[:len(stack)-1]
+        } else {
+            stack = append(stack, char)
+        }
+    }
+    return len(stack) == 0
+}
+```
+
+### 2. Min Stack
+
+#### Problem
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+#### Java
+```java
+import java.util.Stack;
+
+public class MinStack {
+    private Stack<Integer> stack;
+    private Stack<Integer> minStack;
+
+    public MinStack() {
+        stack = new Stack<>();
+        minStack = new Stack<>();
+    }
+
+    public void push(int x) {
+        stack.push(x);
+        if (minStack.isEmpty() || x <= minStack.peek()) {
+            minStack.push(x);
+        }
+    }
+
+    public void pop() {
+        if (stack.pop().equals(minStack.peek())) {
+            minStack.pop();
+        }
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+
+#### Python
+```python
+class MinStack:
+
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+
+    def push(self, x: int) -> None:
+        self.stack.append(x)
+        if not self.min_stack or x <= self.min_stack[-1]:
+            self.min_stack.append(x)
+
+    def pop(self) -> None:
+        if self.stack.pop() == self.min_stack[-1]:
+            self.min_stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def getMin(self) -> int:
+        return self.min_stack[-1]
+```
+
+#### C++
+```cpp
+#include <stack>
+
+class MinStack {
+private:
+    std::stack<int> stack;
+    std::stack<int> minStack;
+
+public:
+    MinStack() {}
+
+    void push(int x) {
+        stack.push(x);
+        if (minStack.empty() || x <= minStack.top()) {
+            minStack.push(x);
+        }
+    }
+
+    void pop() {
+        if (stack.top() == minStack.top()) {
+            minStack.pop();
+        }
+        stack.pop();
+    }
+
+    int top() {
+        return stack.top();
+    }
+
+    int getMin() {
+        return minStack.top();
+    }
+};
+```
+
+#### JavaScript
+```javascript
+var MinStack = function() {
+    this.stack = [];
+    this.minStack = [];
+};
+
+MinStack.prototype.push = function(x) {
+    this.stack.push(x);
+    if (this.minStack.length === 0 || x <= this.minStack[this.minStack.length - 1]) {
+        this.minStack.push(x);
+    }
+};
+
+MinStack.prototype.pop = function() {
+    if (this.stack.pop() === this.minStack[this.minStack.length - 1]) {
+        this.minStack.pop();
+    }
+};
+
+MinStack.prototype.top = function() {
+    return this.stack[this.stack.length - 1];
+};
+
+MinStack.prototype.getMin = function() {
+    return this.minStack[this.minStack.length - 1];
+};
+```
+
+#### Go
+```go
+type MinStack struct {
+    stack    []int
+    minStack []int
+}
+
+func Constructor() MinStack {
+    return MinStack{}
+}
+
+func (this *MinStack) Push(x int) {
+    this.stack = append(this.stack, x)
+    if len(this.minStack) == 0 || x <= this.minStack[len(this.minStack)-1] {
+        this.minStack = append(this.minStack, x)
+    }
+}
+
+func (this *MinStack) Pop() {
+    if this.stack[len(this.stack)-1] == this.minStack[len(this.minStack)-1] {
+        this.minStack = this.minStack[:len(this.minStack)-1]
+    }
+    this.stack = this.stack[:len(this.stack)-1]
+}
+
+func (this *MinStack) Top() int {
+    return this.stack[len(this.stack)-1]
+}
+
+func (this *MinStack) GetMin() int {
+    return this.minStack[len(this.minStack)-1]
+}
+```
+
+### 3. Implement Queue using Stack
+
+#### Problem
+Implement a first in first out (FIFO) queue using only two stacks. The implemented queue should support all the functions of a normal queue (`push`, `pop`, `peek`, `empty`).
+
+#### Java
+```java
+import java.util.Stack;
+
+public class MyQueue {
+    private Stack<Integer> stack1;
+    private Stack<Integer> stack2;
+
+    public MyQueue() {
+        stack1 = new Stack<>();
+        stack2 = new Stack<>();
+    }
+
+    public void push(int x) {
+        stack1.push(x);
+    }
+
+    public int pop() {
+        if (stack2.isEmpty()) {
+            while (!stack1.isEmpty()) {
+                stack2.push(stack1.pop());
+            }
+        }
+        return stack2.pop();
+    }
+
+    public int peek() {
+        if (stack2.isEmpty()) {
+            while (!stack1.isEmpty()) {
+                stack2.push(stack1.pop());
+            }
+        }
+        return stack2.peek();
+    }
+
+    public boolean empty() {
+        return stack1.isEmpty() && stack2.isEmpty();
+    }
+}
+```
+
+#### Python
+```python
+class MyQueue:
+
+    def __init__(self):
+        self.stack1 = []
+        self.stack2 = []
+
+    def push(self, x: int) -> None:
+        self.stack1.append(x)
+
+    def pop(self) -> int:
+        if not self.stack2:
+            while self.stack1:
+                self.stack2.append(self.stack1.pop())
+        return self.stack2.pop()
+
+    def peek(self) -> int:
+        if not self.stack2:
+            while self.stack1:
+                self.stack2.append(self.stack1.pop())
+        return self.stack2[-1]
+
+    def empty(self) -> bool:
+        return not self.stack1 and not self.stack2
+```
+
+#### C++
+```cpp
+#include <stack>
+
+class MyQueue {
+private:
+    std::stack<int> stack1;
+    std::stack<int> stack2;
+
+public:
+    MyQueue() {}
+
+    void push(int x) {
+        stack1.push(x);
+    }
+
+    int pop() {
+        if (stack2.empty()) {
+            while (!stack1.empty()) {
+                stack2.push(stack1.top());
+                stack1.pop();
+            }
+        }
+        int top = stack2.top();
+        stack2.pop();
+        return top;
+    }
+
+    int peek() {
+        if (stack2.empty()) {
+            while (!stack1.empty()) {
+                stack2.push(stack1.top());
+                stack1.pop();
+            }
+        }
+        return stack2.top();
+    }
+
+    bool empty() {
+        return stack1.empty() && stack2.empty();
+    }
+};
+```
+
+#### Java
+
+Source: Conversation with Copilot, 2/10/2025
+(1) github.com. https://github.com/kevinwlip/LC/tree/93fbf6a19d1d3dd0ab36593aa97ec9d6f412fffb/valid_parentheses.py.
+(2) github.com. https://github.com/chaerim-kim/chaerim-kim.github.io/tree/3fdf05a16af197c0ad9fd0773a8a22a2a725ba2d/_posts%2FData%20Structures%20and%20Algorithms%2F2021-03-30-ValidParentheses.md.
+(3) github.com. https://github.com/helenhan/leetcode/tree/9523782fb983d9434e98f86748181bbe00ae97da/src%2Fedu%2Fhelen%2Fleetcode%2FValidParentheses.java.
+(4) github.com. https://github.com/bigbaldy1128/algorithm/tree/2864ac70b1cd73a137be4d373474b42f692fe9c6/src%2Falgorithms%2FValidParentheses.java.
+(5) github.com. https://github.com/leejooho77/algo_and_ds_problems/tree/0f85273908d028b742d23e9485767fb3825a8cea/src%2Fcom%2Fjuho%2Falgo%2Fprac%2Fproblem_0004.java.
+(6) github.com. https://github.com/sophiakaya/HackerrankJavaSolutions/tree/3902a1fb499942ab03b3960215bf133f12d9ab45/src%2Fproblemsolving%2Fstacksandqueues%2FBalancedBrackets.java.
+(7) github.com. https://github.com/robbittim/LeetCode/tree/8517765b575ef3ffd59d03b2ce10684b74758595/src%2Fcom%2FValidParentheses_20.java.
+(8) github.com. https://github.com/jimzers/coding-challenges/tree/72f77a2af6540d31f1153c3c075c1a859ee97475/leetcode%2Fvalid-parentheses%2Fvalid-parentheses.py.
+(9) github.com. https://github.com/Junth/Insight-Workshop/tree/78444530563c17090eb0fea0f560001f9d7197d6/Python%20Programming%2FAssignment2%2FQuestion19.py.
+(10) github.com. https://github.com/lpcxy/Algorithm/tree/75ece4e3e828e542808bee65d83dbebe1f72cd8a/src%2Fmain%2Fjava%2Fcom%2Fliping%2FUtil%2FMinStack.java.
+(11) github.com. https://github.com/learnweekend/ALL/tree/36bda366182b8ec257806eb7ed8ed5df85afbdc1/MinStack.java.
+(12) github.com. https://github.com/MuPrince/mall/tree/0ea9d5578cad965fb3c8c01eddd0d651f98cc4d7/prince-util%2Fsrc%2Fmain%2Fjava%2Fcom%2Fprince%2Futil%2FalgorithmImpl%2Fstack%2FMinStack.java.
+(13) github.com. https://github.com/seaskymonster/leetcode/tree/4f9922888e806d9d3cf16b8f2d6447d80a86986e/155-Min-Stack%2Fsolution.java.
+(14) github.com. https://github.com/EarthChen/leetcode-java/tree/ccbdd2a56586793fc57ce9fd10bbc58072f25d92/src%2Fmain%2Fjava%2Fcom%2Fleetcode%2Feditor%2Fcn%2FBaoHanMinhanShuDeZhanLcof.java.
+(15) github.com. https://github.com/Roooooobin/leetcode-problems-Java/tree/b5159cc563544c217dc566f55eb51ee20c29658c/Min%20Stack%2Fsrc%2FLeetcode155.java.
+(16) github.com. https://github.com/xjz1842/algorithm-learn/tree/86dfb0d14b1ae475156c81c69dda24e398e0b7f6/leetcode%2Fsrc%2Fmain%2Fjava%2Fcom%2Falgorithms%2Fleetcode%2Fsecondhundred%2Fleetcode_155_MinStack.java.
+(17) github.com. https://github.com/YaqianQi/Algorithm-and-Data-Structure/tree/2e1751263f484709102f7f2caf18776a004c8230/Topic%20Classic%20Problem%2Fstack.md.
+(18) github.com. https://github.com/joshflchan/30-day-leetcoding-challenge/tree/5fb25c0f7214f5ec66751b26d58726416c7dd99a/solutions%2Fweek_2%2Fmin_stack.py.
+(19) github.com. https://github.com/GaoPangPang0318/Algorithm_LeetCode/tree/ad6376c5395d539167ddb6f118394655eefc891b/p1-3-leetcode155.py.
+(20) github.com. https://github.com/ppd0705/leetcode/tree/cf85de8ccfddbd9f3a5d30ddca7313913e43a658/algorithms%2Fpython%2F155_min_stack.py.
+(21) github.com. https://github.com/skyline75489/leetcode/tree/42c76bb5202dea8e5bce3fc4567b3cdacf995fec/min-stack.cpp.
+(22) github.com. https://github.com/ovidiubute/leetcode-js/tree/a4233d85c656e1f84adff57f971a5d4377de7f2b/solutions%2F0155.min-stack.js.
+(23) github.com. https://github.com/fr180/My-Algorithm-Record/tree/3a2bfd04afb665cf5256309e2840718015ae288a/jz30-MinStack.js.
+(24) github.com. https://github.com/Codeofsanju/InterviewPrep/tree/7d77927e915efe273f952965b4169213887ad49e/LeetCode%2FminStack-155%2Fsolution.js.
+(25) github.com. https://github.com/jiasong214/leetcode/tree/ab33d3f56931352963b2f03b29118a5c901d0eea/Top-Interview-Questions%28easy%29%2Fdesign%2FminStack.js.
+(26) github.com. https://github.com/victormeng24/LeetCode-Go/tree/77317d356213529bb64b0d576d9162a7fe64c71a/min_stack%2Fsolution.go.
+(27) github.com. https://github.com/kangpanwork/leetcode/tree/e80a8df9e2622ff5110f9db2728c8eca39da677b/lcci%2F03.02.Min%20Stack%2FREADME_EN.md.
+(28) github.com. https://github.com/htdwade/LeetCode/tree/69c264cb15ab161ea2be7b36b38c25043d87bd5d/0155.MinStack%2FMinStack.go.
+(29) github.com. https://github.com/a7madM/30-Day-LeetCoding-Challenge/tree/31c9d15a532fd2beeea76fccf9888ed3813a4ff8/src%2FminStack.go.
+(30) github.com. https://github.com/kcper/codingproblems/tree/fd4b3850ad11d81c9811428d0a26652fb015b253/LeetCode%2FMin%20Stack%2Fmain.go.
+(31) github.com. https://github.com/hollknight/CodingInterviews/tree/8a7137c9bd40347d47f0a928790d63b2d9ec643e/T30_MinStack%2FREADME.md.
+(32) github.com. https://github.com/damutou95/gostudy/tree/e9cf982b79ba06be18bb08573a5fcdee5a1d0151/GoStudy%2Fleetcode_go%2Fleetcode155.go.
+(33) github.com. https://github.com/missasd2/javaproject/tree/2244c75f94d927cd73b532dc6918f933e487ed09/src%2Fmain%2Fjava%2Fleetcode%2Ftag%2Fstack%2FMyQueue.java.
+(34) github.com. https://github.com/lskylines/algorithm/tree/e41095178c56eb5a27b52c9afbcd64604736ca3a/src%2Fmain%2Fjava%2Fcom%2Fleetcode%2Falgorithm%2Fstack%2FMyQueue.java.
+(35) github.com. https://github.com/maxsarratt/leetcode/tree/7eb14080ebfb63218049c1f7a34b18b1c1372605/stack-queue%2Fimplement-queue-using-stacks%2FREADME.md.
+(36) github.com. https://github.com/huijie6/LeetBook/tree/826f7d00354f511416847965e7314e2ef719a255/docs%2Fmenu%2Fbackup%2FCS%2FPY%2Fdata_queue.md.
+(37) github.com. https://github.com/Haru922/daily_coding/tree/33dffa7886d77a8c27715aab1186ddd76d2546d8/lc%2F232.py.
+(38) github.com. https://github.com/alanxu/my-alg/tree/088cfca93901950dc40e09dfb89c587f6165a017/algorithms%2Fstack.md.
+(39) github.com. https://github.com/jcglqmoyx/leetcode_cpp/tree/6e108c82245861ae006ff91d686eb2e71c264b1d/src%2FP232.cpp.
+(40) github.com. https://github.com/edisonleolhl/LeetCode/tree/0b3d53e9f03c4c1351cb8df2542b29ed2ad4a128/LeetCode%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95.md.
+(41) github.com. https://github.com/foreverhy/leetcode/tree/3ef49ea27095f8ca6583417f2e021e93ac3e1f76/ImplementQueueUsingStacks.cc.

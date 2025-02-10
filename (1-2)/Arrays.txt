@@ -1,0 +1,425 @@
+Let's break it down step by step, starting from the basics of Java arrays and moving toward solving these problems efficiently.
+
+## **Step 1: Java Array Basics**
+Before solving problems, you should be comfortable with:
+- Declaring and initializing arrays
+- Looping through arrays (for loop, enhanced for loop)
+- Common operations (insertion, deletion, searching)
+- Understanding time complexity (Big-O notation)
+
+### **Declaring and Initializing Arrays**
+```java
+// Declaration
+int[] arr;  
+
+// Initialization
+arr = new int[5];  // Creates an array of size 5, default values are 0
+
+// Declaration and initialization together
+int[] nums = {1, 2, 3, 4, 5};
+
+// Accessing elements
+System.out.println(nums[0]);  // Prints 1
+
+// Looping through an array
+for (int i = 0; i < nums.length; i++) {
+    System.out.print(nums[i] + " ");
+}
+```
+
+---
+## **Step 2: Solving Problems**
+Now, let's tackle each problem one by one.
+
+### **1. Two Sum**
+**Problem Statement:** Given an array `nums` and an integer `target`, return the indices of the two numbers such that they add up to `target`.
+
+#### **Brute Force Approach (O(n²))**
+```java
+public int[] twoSumBruteForce(int[] nums, int target) {
+    for (int i = 0; i < nums.length; i++) {
+        for (int j = i + 1; j < nums.length; j++) {
+            if (nums[i] + nums[j] == target) {
+                return new int[]{i, j};
+            }
+        }
+    }
+    return new int[]{};  // No solution found
+}
+```
+
+#### **Optimized Approach using HashMap (O(n))**
+```java
+import java.util.HashMap;
+
+public int[] twoSum(int[] nums, int target) {
+    HashMap<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < nums.length; i++) {
+        int complement = target - nums[i]; 
+        if (map.containsKey(complement)) {
+            return new int[]{map.get(complement), i};
+        }
+        map.put(nums[i], i);//save all values in map in one iteration and use it when needed
+    }
+    return new int[]{};  // No solution found
+}
+```
+
+---
+
+### **2. Merge Intervals**
+**Problem Statement:** Given an array of intervals where intervals[i] = [start, end], merge all overlapping intervals.
+
+
+#### **Efficient Approach (O(n log n))**
+```java
+import java.util.Arrays;
+import java.util.LinkedList;
+
+public int[][] merge(int[][] intervals) {
+    if (intervals.length == 0) return new int[0][];
+    
+    // Sort intervals based on the start time
+    Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+
+    LinkedList<int[]> merged = new LinkedList<>();
+    for (int[] interval : intervals) {
+        if (merged.isEmpty() || merged.getLast()[1] < interval[0]) {
+            merged.add(interval);
+        } else {
+            merged.getLast()[1] = Math.max(merged.getLast()[1], interval[1]);
+        }
+    }
+    return merged.toArray(new int[merged.size()][]);
+}
+```
+
+---
+
+### **3. Best Time to Buy and Sell Stock**
+**Problem Statement:** Given an array where `prices[i]` is the price of a given stock on the `i`th day, find the maximum profit.
+
+#### **Efficient Approach (O(n))**
+```java
+public int maxProfit(int[] prices) {
+    int minPrice = Integer.MAX_VALUE;
+    int maxProfit = 0;
+
+    for (int price : prices) {
+        if (price < minPrice) {
+            minPrice = price;  // Update min price
+        } else {
+            maxProfit = Math.max(maxProfit, price - minPrice);
+        }
+    }
+    return maxProfit;
+}
+```
+
+---
+
+### **4. Rotate Array**
+**Problem Statement:** Rotate the array to the right by `k` steps.
+
+#### **Using Reverse Method (O(n))**
+```java
+public void rotate(int[] nums, int k) {
+    k %= nums.length; // Handle cases where k > nums.length
+
+    reverse(nums, 0, nums.length - 1);
+    reverse(nums, 0, k - 1);
+    reverse(nums, k, nums.length - 1);
+}
+
+private void reverse(int[] nums, int left, int right) {
+    while (left < right) {
+        int temp = nums[left];
+        nums[left] = nums[right];
+        nums[right] = temp;
+        left++;
+        right--;
+    }
+}
+```
+
+---
+
+### **5. Trapping Rain Water**
+**Problem Statement:** Given an array representing elevation heights, find how much water it can trap after raining.
+
+#### **Efficient Approach (O(n))**
+```java
+public int trap(int[] height) {
+    if (height.length == 0) return 0;
+
+    int left = 0, right = height.length - 1;
+    int leftMax = 0, rightMax = 0, trappedWater = 0;
+
+    while (left < right) {
+        if (height[left] < height[right]) {
+            if (height[left] >= leftMax) {
+                leftMax = height[left];
+            } else {
+                trappedWater += leftMax - height[left];
+            }
+            left++;
+        } else {
+            if (height[right] >= rightMax) {
+                rightMax = height[right];
+            } else {
+                trappedWater += rightMax - height[right];
+            }
+            right--;
+        }
+    }
+    return trappedWater;
+}
+```
+
+---
+
+## **Next Steps**
+1. **Understand Time Complexity:** Why O(n log n) for sorting? Why O(n) for linear scans?
+2. **Practice Variants:** Modify the problems slightly (e.g., Two Sum with sorted arrays, Best Time to Buy with multiple transactions).
+3. **Implement Edge Cases:** Handle edge cases like empty arrays, single-element arrays, and large numbers.
+4. **Data Structures:** Move beyond arrays to linked lists, stacks, queues, and hash maps.
+
+Would you like me to cover more concepts, such as recursion, dynamic programming, or Java Collections next? 🚀
+
+
+
+
+
+Let's go step by step and provide implementations for all the problems in **Python** and **C++** along with explanations.
+
+---
+
+## **1. Two Sum**
+### **Python**
+```python
+def two_sum(nums, target):
+    num_map = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in num_map:
+            return [num_map[complement], i]
+        num_map[num] = i
+    return []
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+### **C++**
+```cpp
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+vector<int> twoSum(vector<int>& nums, int target) {
+    unordered_map<int, int> num_map;
+    for (int i = 0; i < nums.size(); i++) {
+        int complement = target - nums[i];
+        if (num_map.find(complement) != num_map.end()) {
+            return {num_map[complement], i};
+        }
+        num_map[nums[i]] = i;
+    }
+    return {};
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+## **2. Merge Intervals**
+### **Python**
+```python
+def merge(intervals):
+    intervals.sort(key=lambda x: x[0])
+    merged = []
+    for interval in intervals:
+        if not merged or merged[-1][1] < interval[0]:
+            merged.append(interval)
+        else:
+            merged[-1][1] = max(merged[-1][1], interval[1])
+    return merged
+```
+**Time Complexity:** O(n log n)  
+**Space Complexity:** O(n)  
+
+### **C++**
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+vector<vector<int>> merge(vector<vector<int>>& intervals) {
+    if (intervals.empty()) return {};
+
+    sort(intervals.begin(), intervals.end());
+    vector<vector<int>> merged;
+
+    for (auto& interval : intervals) {
+        if (merged.empty() || merged.back()[1] < interval[0]) {
+            merged.push_back(interval);
+        } else {
+            merged.back()[1] = max(merged.back()[1], interval[1]);
+        }
+    }
+    return merged;
+}
+```
+**Time Complexity:** O(n log n)  
+**Space Complexity:** O(n)  
+
+---
+
+## **3. Best Time to Buy and Sell Stock**
+### **Python**
+```python
+def max_profit(prices):
+    min_price = float('inf')
+    max_profit = 0
+
+    for price in prices:
+        if price < min_price:
+            min_price = price
+        else:
+            max_profit = max(max_profit, price - min_price)
+    
+    return max_profit
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+### **C++**
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int maxProfit(vector<int>& prices) {
+    int min_price = INT_MAX, max_profit = 0;
+
+    for (int price : prices) {
+        min_price = min(min_price, price);
+        max_profit = max(max_profit, price - min_price);
+    }
+
+    return max_profit;
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+---
+
+## **4. Rotate Array**
+### **Python**
+```python
+def rotate(nums, k):
+    k %= len(nums)
+    nums.reverse()
+    nums[:k] = reversed(nums[:k])
+    nums[k:] = reversed(nums[k:])
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+### **C++**
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+void rotate(vector<int>& nums, int k) {
+    k %= nums.size();
+    reverse(nums.begin(), nums.end());
+    reverse(nums.begin(), nums.begin() + k);
+    reverse(nums.begin() + k, nums.end());
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+---
+
+## **5. Trapping Rain Water**
+### **Python**
+```python
+def trap(height):
+    if not height:
+        return 0
+    
+    left, right = 0, len(height) - 1
+    left_max, right_max = 0, 0
+    trapped_water = 0
+
+    while left < right:
+        if height[left] < height[right]:
+            if height[left] >= left_max:
+                left_max = height[left]
+            else:
+                trapped_water += left_max - height[left]
+            left += 1
+        else:
+            if height[right] >= right_max:
+                right_max = height[right]
+            else:
+                trapped_water += right_max - height[right]
+            right -= 1
+    
+    return trapped_water
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+### **C++**
+```cpp
+#include <vector>
+
+using namespace std;
+
+int trap(vector<int>& height) {
+    if (height.empty()) return 0;
+
+    int left = 0, right = height.size() - 1;
+    int left_max = 0, right_max = 0, trapped_water = 0;
+
+    while (left < right) {
+        if (height[left] < height[right]) {
+            if (height[left] >= left_max) {
+                left_max = height[left];
+            } else {
+                trapped_water += left_max - height[left];
+            }
+            left++;
+        } else {
+            if (height[right] >= right_max) {
+                right_max = height[right];
+            } else {
+                trapped_water += right_max - height[right];
+            }
+            right--;
+        }
+    }
+    return trapped_water;
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(1)  
+
+---
+
+### **Next Steps**
+1. **Practice on LeetCode:** Try different variations of these problems.
+2. **Understand Edge Cases:** Handle empty inputs, single-element arrays, and large inputs.
+3. **Move to Advanced Topics:** Learn dynamic programming, graphs, and linked lists.
+
+Would you like additional explanations, breakdowns, or different variations of these problems? 🚀

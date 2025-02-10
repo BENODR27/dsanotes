@@ -1,0 +1,258 @@
+Got it! Let's go through **Day 3-4: Strings** with Java, Python, and C++ implementations.
+
+---
+
+## **1. Longest Substring Without Repeating Characters**
+**Problem:** Given a string `s`, find the length of the longest substring without repeating characters.
+
+note:  
+
+### **Java**
+```java
+import java.util.HashSet;
+
+public class LongestSubstring {
+    public int lengthOfLongestSubstring(String s) {
+        int maxLength = 0, left = 0;
+        HashSet<Character> seen = new HashSet<>();
+
+        for (int right = 0; right < s.length(); right++) {
+            while (seen.contains(s.charAt(right))) {
+                seen.remove(s.charAt(left));
+                left++;
+            }
+            seen.add(s.charAt(right));
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+    }
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(min(n, 26)) (only lowercase/uppercase letters)
+
+### **Python**
+```python
+def length_of_longest_substring(s):
+    seen = set()
+    left = 0
+    max_length = 0
+
+    for right in range(len(s)):
+        while s[right] in seen:
+            seen.remove(s[left])
+            left += 1
+        seen.add(s[right])
+        max_length = max(max_length, right - left + 1)
+    
+    return max_length
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(min(n, 26))
+
+### **C++**
+```cpp
+#include <unordered_set>
+#include <string>
+
+using namespace std;
+
+int lengthOfLongestSubstring(string s) {
+    unordered_set<char> seen;
+    int left = 0, maxLength = 0;
+
+    for (int right = 0; right < s.length(); right++) {
+        while (seen.find(s[right]) != seen.end()) {
+            seen.erase(s[left]);
+            left++;
+        }
+        seen.insert(s[right]);
+        maxLength = max(maxLength, right - left + 1);
+    }
+    return maxLength;
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(min(n, 26))  
+
+---
+
+## **2. Longest Common Prefix**
+**Problem:** Find the longest common prefix among an array of strings.
+
+### **Java**
+```java
+public class LongestCommonPrefix {
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) return "";
+        String prefix = strs[0];
+
+        for (int i = 1; i < strs.length; i++) {
+            while (strs[i].indexOf(prefix) != 0) { // prefix check return 0 others return other positions
+                prefix = prefix.substring(0, prefix.length() - 1);
+                if (prefix.isEmpty()) return "";
+            }
+        }
+        return prefix;
+    }
+}
+```
+**Time Complexity:** O(n * m) (where `n` is number of strings and `m` is the length of the shortest string)  
+**Space Complexity:** O(1)  
+
+### **Python**
+```python
+def longest_common_prefix(strs):
+    if not strs:
+        return ""
+    
+    prefix = strs[0]
+    for s in strs[1:]:
+        while not s.startswith(prefix):
+            prefix = prefix[:-1]
+            if not prefix:
+                return ""
+    return prefix
+```
+**Time Complexity:** O(n * m)  
+**Space Complexity:** O(1)  
+
+### **C++**
+```cpp
+#include <vector>
+#include <string>
+
+using namespace std;
+
+string longestCommonPrefix(vector<string>& strs) {
+    if (strs.empty()) return "";
+    string prefix = strs[0];
+
+    for (int i = 1; i < strs.size(); i++) {
+        while (strs[i].find(prefix) != 0) {
+            prefix = prefix.substr(0, prefix.size() - 1);
+            if (prefix.empty()) return "";
+        }
+    }
+    return prefix;
+}
+```
+**Time Complexity:** O(n * m)  
+**Space Complexity:** O(1)  
+
+---
+
+## **3. Reverse Words in a String**
+**Problem:** Given a string `s`, reverse the order of words.
+
+### **Java**
+```java
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+public class ReverseWords {
+    public String reverseWords(String s) {
+        List<String> words = Arrays.asList(s.trim().split("\\s+"));
+        Collections.reverse(words);
+        return String.join(" ", words);
+    }
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+### **Python**
+```python
+def reverse_words(s):
+    return " ".join(s.strip().split()[::-1])
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+### **C++**
+```cpp
+#include <sstream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+string reverseWords(string s) {
+    istringstream iss(s);
+    vector<string> words;
+    string word;
+    
+    while (iss >> word) {
+        words.push_back(word);
+    }
+    reverse(words.begin(), words.end());
+    
+    string result;
+    for (int i = 0; i < words.size(); i++) {
+        if (i > 0) result += " ";
+        result += words[i];
+    }
+    
+    return result;
+}
+```
+**Time Complexity:** O(n)  
+**Space Complexity:** O(n)  
+
+---
+
+## **4. Valid Anagram**
+**Problem:** Check if two strings are anagrams.
+
+### **Java**
+```java
+import java.util.Arrays;
+
+public class ValidAnagram {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) return false;
+        char[] sArr = s.toCharArray();
+        char[] tArr = t.toCharArray();
+        Arrays.sort(sArr);
+        Arrays.sort(tArr);
+        return Arrays.equals(sArr, tArr);
+    }
+}
+```
+**Time Complexity:** O(n log n)  
+**Space Complexity:** O(1)  
+
+### **Python**
+```python
+def is_anagram(s, t):
+    return sorted(s) == sorted(t)
+```
+**Time Complexity:** O(n log n)  
+**Space Complexity:** O(1)  
+
+### **C++**
+```cpp
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+bool isAnagram(string s, string t) {
+    if (s.length() != t.length()) return false;
+    sort(s.begin(), s.end());
+    sort(t.begin(), t.end());
+    return s == t;
+}
+```
+**Time Complexity:** O(n log n)  
+**Space Complexity:** O(1)  
+
+---
+
+## **Next Steps**
+- **Edge Cases:** Empty strings, single-character strings, special characters.
+- **Optimizations:** For anagram checking, use a frequency counter (O(n) solution).
+- **Practice:** Implement variations like checking substrings and case insensitivity.
+
+Would you like me to cover any additional concepts in strings? 🚀

@@ -383,46 +383,169 @@ public:
 ```
 
 #### Java
+Got it! Let's go through the "Sliding Window Maximum" problem and provide solutions in Java, Python, C++, JavaScript, and Go, with explanations.
 
-Source: Conversation with Copilot, 2/10/2025
-(1) github.com. https://github.com/kevinwlip/LC/tree/93fbf6a19d1d3dd0ab36593aa97ec9d6f412fffb/valid_parentheses.py.
-(2) github.com. https://github.com/chaerim-kim/chaerim-kim.github.io/tree/3fdf05a16af197c0ad9fd0773a8a22a2a725ba2d/_posts%2FData%20Structures%20and%20Algorithms%2F2021-03-30-ValidParentheses.md.
-(3) github.com. https://github.com/helenhan/leetcode/tree/9523782fb983d9434e98f86748181bbe00ae97da/src%2Fedu%2Fhelen%2Fleetcode%2FValidParentheses.java.
-(4) github.com. https://github.com/bigbaldy1128/algorithm/tree/2864ac70b1cd73a137be4d373474b42f692fe9c6/src%2Falgorithms%2FValidParentheses.java.
-(5) github.com. https://github.com/leejooho77/algo_and_ds_problems/tree/0f85273908d028b742d23e9485767fb3825a8cea/src%2Fcom%2Fjuho%2Falgo%2Fprac%2Fproblem_0004.java.
-(6) github.com. https://github.com/sophiakaya/HackerrankJavaSolutions/tree/3902a1fb499942ab03b3960215bf133f12d9ab45/src%2Fproblemsolving%2Fstacksandqueues%2FBalancedBrackets.java.
-(7) github.com. https://github.com/robbittim/LeetCode/tree/8517765b575ef3ffd59d03b2ce10684b74758595/src%2Fcom%2FValidParentheses_20.java.
-(8) github.com. https://github.com/jimzers/coding-challenges/tree/72f77a2af6540d31f1153c3c075c1a859ee97475/leetcode%2Fvalid-parentheses%2Fvalid-parentheses.py.
-(9) github.com. https://github.com/Junth/Insight-Workshop/tree/78444530563c17090eb0fea0f560001f9d7197d6/Python%20Programming%2FAssignment2%2FQuestion19.py.
-(10) github.com. https://github.com/lpcxy/Algorithm/tree/75ece4e3e828e542808bee65d83dbebe1f72cd8a/src%2Fmain%2Fjava%2Fcom%2Fliping%2FUtil%2FMinStack.java.
-(11) github.com. https://github.com/learnweekend/ALL/tree/36bda366182b8ec257806eb7ed8ed5df85afbdc1/MinStack.java.
-(12) github.com. https://github.com/MuPrince/mall/tree/0ea9d5578cad965fb3c8c01eddd0d651f98cc4d7/prince-util%2Fsrc%2Fmain%2Fjava%2Fcom%2Fprince%2Futil%2FalgorithmImpl%2Fstack%2FMinStack.java.
-(13) github.com. https://github.com/seaskymonster/leetcode/tree/4f9922888e806d9d3cf16b8f2d6447d80a86986e/155-Min-Stack%2Fsolution.java.
-(14) github.com. https://github.com/EarthChen/leetcode-java/tree/ccbdd2a56586793fc57ce9fd10bbc58072f25d92/src%2Fmain%2Fjava%2Fcom%2Fleetcode%2Feditor%2Fcn%2FBaoHanMinhanShuDeZhanLcof.java.
-(15) github.com. https://github.com/Roooooobin/leetcode-problems-Java/tree/b5159cc563544c217dc566f55eb51ee20c29658c/Min%20Stack%2Fsrc%2FLeetcode155.java.
-(16) github.com. https://github.com/xjz1842/algorithm-learn/tree/86dfb0d14b1ae475156c81c69dda24e398e0b7f6/leetcode%2Fsrc%2Fmain%2Fjava%2Fcom%2Falgorithms%2Fleetcode%2Fsecondhundred%2Fleetcode_155_MinStack.java.
-(17) github.com. https://github.com/YaqianQi/Algorithm-and-Data-Structure/tree/2e1751263f484709102f7f2caf18776a004c8230/Topic%20Classic%20Problem%2Fstack.md.
-(18) github.com. https://github.com/joshflchan/30-day-leetcoding-challenge/tree/5fb25c0f7214f5ec66751b26d58726416c7dd99a/solutions%2Fweek_2%2Fmin_stack.py.
-(19) github.com. https://github.com/GaoPangPang0318/Algorithm_LeetCode/tree/ad6376c5395d539167ddb6f118394655eefc891b/p1-3-leetcode155.py.
-(20) github.com. https://github.com/ppd0705/leetcode/tree/cf85de8ccfddbd9f3a5d30ddca7313913e43a658/algorithms%2Fpython%2F155_min_stack.py.
-(21) github.com. https://github.com/skyline75489/leetcode/tree/42c76bb5202dea8e5bce3fc4567b3cdacf995fec/min-stack.cpp.
-(22) github.com. https://github.com/ovidiubute/leetcode-js/tree/a4233d85c656e1f84adff57f971a5d4377de7f2b/solutions%2F0155.min-stack.js.
-(23) github.com. https://github.com/fr180/My-Algorithm-Record/tree/3a2bfd04afb665cf5256309e2840718015ae288a/jz30-MinStack.js.
-(24) github.com. https://github.com/Codeofsanju/InterviewPrep/tree/7d77927e915efe273f952965b4169213887ad49e/LeetCode%2FminStack-155%2Fsolution.js.
-(25) github.com. https://github.com/jiasong214/leetcode/tree/ab33d3f56931352963b2f03b29118a5c901d0eea/Top-Interview-Questions%28easy%29%2Fdesign%2FminStack.js.
-(26) github.com. https://github.com/victormeng24/LeetCode-Go/tree/77317d356213529bb64b0d576d9162a7fe64c71a/min_stack%2Fsolution.go.
-(27) github.com. https://github.com/kangpanwork/leetcode/tree/e80a8df9e2622ff5110f9db2728c8eca39da677b/lcci%2F03.02.Min%20Stack%2FREADME_EN.md.
-(28) github.com. https://github.com/htdwade/LeetCode/tree/69c264cb15ab161ea2be7b36b38c25043d87bd5d/0155.MinStack%2FMinStack.go.
-(29) github.com. https://github.com/a7madM/30-Day-LeetCoding-Challenge/tree/31c9d15a532fd2beeea76fccf9888ed3813a4ff8/src%2FminStack.go.
-(30) github.com. https://github.com/kcper/codingproblems/tree/fd4b3850ad11d81c9811428d0a26652fb015b253/LeetCode%2FMin%20Stack%2Fmain.go.
-(31) github.com. https://github.com/hollknight/CodingInterviews/tree/8a7137c9bd40347d47f0a928790d63b2d9ec643e/T30_MinStack%2FREADME.md.
-(32) github.com. https://github.com/damutou95/gostudy/tree/e9cf982b79ba06be18bb08573a5fcdee5a1d0151/GoStudy%2Fleetcode_go%2Fleetcode155.go.
-(33) github.com. https://github.com/missasd2/javaproject/tree/2244c75f94d927cd73b532dc6918f933e487ed09/src%2Fmain%2Fjava%2Fleetcode%2Ftag%2Fstack%2FMyQueue.java.
-(34) github.com. https://github.com/lskylines/algorithm/tree/e41095178c56eb5a27b52c9afbcd64604736ca3a/src%2Fmain%2Fjava%2Fcom%2Fleetcode%2Falgorithm%2Fstack%2FMyQueue.java.
-(35) github.com. https://github.com/maxsarratt/leetcode/tree/7eb14080ebfb63218049c1f7a34b18b1c1372605/stack-queue%2Fimplement-queue-using-stacks%2FREADME.md.
-(36) github.com. https://github.com/huijie6/LeetBook/tree/826f7d00354f511416847965e7314e2ef719a255/docs%2Fmenu%2Fbackup%2FCS%2FPY%2Fdata_queue.md.
-(37) github.com. https://github.com/Haru922/daily_coding/tree/33dffa7886d77a8c27715aab1186ddd76d2546d8/lc%2F232.py.
-(38) github.com. https://github.com/alanxu/my-alg/tree/088cfca93901950dc40e09dfb89c587f6165a017/algorithms%2Fstack.md.
-(39) github.com. https://github.com/jcglqmoyx/leetcode_cpp/tree/6e108c82245861ae006ff91d686eb2e71c264b1d/src%2FP232.cpp.
-(40) github.com. https://github.com/edisonleolhl/LeetCode/tree/0b3d53e9f03c4c1351cb8df2542b29ed2ad4a128/LeetCode%E5%88%B7%E9%A2%98%E8%AE%B0%E5%BD%95.md.
-(41) github.com. https://github.com/foreverhy/leetcode/tree/3ef49ea27095f8ca6583417f2e021e93ac3e1f76/ImplementQueueUsingStacks.cc.
+### 4. Sliding Window Maximum
+
+#### Problem
+Given an array `nums` and a sliding window size `k`, return the maximum value in each sliding window of size `k`.
+
+#### Java
+```java
+import java.util.*;
+
+public class SlidingWindowMaximum {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0) return new int[0];
+        int n = nums.length;
+        int[] result = new int[n - k + 1];
+        Deque<Integer> deque = new LinkedList<>();
+        
+        for (int i = 0; i < n; i++) {
+            // Remove elements not within the sliding window
+            if (!deque.isEmpty() && deque.peekFirst() < i - k + 1) {
+                deque.pollFirst();
+            }
+            // Remove elements smaller than the current element
+            while (!deque.isEmpty() && nums[deque.peekLast()] < nums[i]) {
+                deque.pollLast();
+            }
+            // Add the current element at the end of the deque
+            deque.offerLast(i);
+            // The front of the deque is the largest element in the current window
+            if (i >= k - 1) {
+                result[i - k + 1] = nums[deque.peekFirst()];
+            }
+        }
+        return result;
+    }
+}
+```
+
+#### Python
+```python
+from collections import deque
+
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        if not nums:
+            return []
+        result = []
+        deque = collections.deque()
+        
+        for i in range(len(nums)):
+            # Remove elements not within the sliding window
+            if deque and deque[0] < i - k + 1:
+                deque.popleft()
+            # Remove elements smaller than the current element
+            while deque and nums[deque[-1]] < nums[i]:
+                deque.pop()
+            # Add the current element at the end of the deque
+            deque.append(i)
+            # The front of the deque is the largest element in the current window
+            if i >= k - 1:
+                result.append(nums[deque[0]])
+        return result
+```
+
+#### C++
+```cpp
+#include <deque>
+#include <vector>
+
+class Solution {
+public:
+    std::vector<int> maxSlidingWindow(std::vector<int>& nums, int k) {
+        if (nums.empty()) return {};
+        std::vector<int> result;
+        std::deque<int> deque;
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            // Remove elements not within the sliding window
+            if (!deque.empty() && deque.front() < i - k + 1) {
+                deque.pop_front();
+            }
+            // Remove elements smaller than the current element
+            while (!deque.empty() && nums[deque.back()] < nums[i]) {
+                deque.pop_back();
+            }
+            // Add the current element at the end of the deque
+            deque.push_back(i);
+            // The front of the deque is the largest element in the current window
+            if (i >= k - 1) {
+                result.push_back(nums[deque.front()]);
+            }
+        }
+        return result;
+    }
+};
+```
+
+#### JavaScript
+```javascript
+var maxSlidingWindow = function(nums, k) {
+    if (nums.length === 0) return [];
+    const result = [];
+    const deque = [];
+    
+    for (let i = 0; i < nums.length; i++) {
+        // Remove elements not within the sliding window
+        if (deque.length && deque[0] < i - k + 1) {
+            deque.shift();
+        }
+        // Remove elements smaller than the current element
+        while (deque.length && nums[deque[deque.length - 1]] < nums[i]) {
+            deque.pop();
+        }
+        // Add the current element at the end of the deque
+        deque.push(i);
+        // The front of the deque is the largest element in the current window
+        if (i >= k - 1) {
+            result.push(nums[deque[0]]);
+        }
+    }
+    return result;
+};
+```
+
+#### Go
+```go
+func maxSlidingWindow(nums []int, k int) []int {
+    if len(nums) == 0 {
+        return []int{}
+    }
+    result := []int{}
+    deque := []int{}
+    
+    for i := 0; i < len(nums); i++ {
+        // Remove elements not within the sliding window
+        if len(deque) > 0 && deque[0] < i - k + 1 {
+            deque = deque[1:]
+        }
+        // Remove elements smaller than the current element
+        for len(deque) > 0 && nums[deque[len(deque)-1]] < nums[i] {
+            deque = deque[:len(deque)-1]
+        }
+        // Add the current element at the end of the deque
+        deque = append(deque, i)
+        // The front of the deque is the largest element in the current window
+        if i >= k - 1 {
+            result = append(result, nums[deque[0]])
+        }
+    }
+    return result
+}
+```
+
+### Explanation
+
+1. **Deque**: We use a deque (double-ended queue) to store indices of elements in the current window. The deque helps us keep track of the maximum element in the current window efficiently.
+2. **Remove Out-of-Window Elements**: Before adding a new element, we remove elements from the front of the deque that are out of the current window.
+3. **Remove Smaller Elements**: We remove elements from the back of the deque that are smaller than the current element because they will not be needed anymore.
+4. **Add Current Element**: We add the current element's index to the back of the deque.
+5. **Store Maximum**: The front of the deque always contains the index of the maximum element for the current window. We store this maximum in the result array.
+
+I hope this helps! If you have any more questions or need further clarification, feel free to ask. 😊
+
+Source: Conversation with Copilot, 2/11/2025
+(1) github.com. https://github.com/ApplePapaya/Problems/tree/51357fc22dcc557948aa6f3edd7c8e5abcf6a4cc/Programs%2Fsrc%2Fcom%2Frun%2Fleetcode%2Farrays%2FSlidingWindowMaximum239.java.

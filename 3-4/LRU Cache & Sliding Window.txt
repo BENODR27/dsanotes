@@ -1,0 +1,240 @@
+Sure! Let's go through the implementation of the LRU Cache and Minimum Window Substring problems in Java, JavaScript, and Go.
+
+### 1. LRU Cache
+
+#### Problem
+Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+
+#### Java
+```java
+import java.util.*;
+
+class LRUCache {
+    private final int capacity;
+    private final Map<Integer, Integer> cache;
+    private final LinkedHashMap<Integer, Integer> order;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.cache = new HashMap<>();
+        this.order = new LinkedHashMap<>(capacity, 0.75f, true);
+    }
+
+    public int get(int key) {
+        if (!cache.containsKey(key)) {
+            return -1;
+        }
+        order.get(key); // Access the key to update its position
+        return cache.get(key);
+    }
+
+    public void put(int key, int value) {
+        if (cache.size() >= capacity && !cache.containsKey(key)) {
+            int oldestKey = order.keySet().iterator().next();
+            cache.remove(oldestKey);
+            order.remove(oldestKey);
+        }
+        cache.put(key, value);
+        order.put(key, value);
+    }
+}
+```
+
+#### JavaScript
+```javascript
+class LRUCache {
+    constructor(capacity) {
+        this.capacity = capacity;
+        this.cache = new Map();
+    }
+
+    get(key) {
+        if (!this.cache.has(key)) {
+            return -1;
+        }
+        const value = this.cache.get(key);
+        this.cache.delete(key);
+        this.cache.set(key, value);
+        return value;
+    }
+
+    put(key, value) {
+        if (this.cache.has(key)) {
+            this.cache.delete(key);
+        } else if (this.cache.size >= this.capacity) {
+            const oldestKey = this.cache.keys().next().value;
+            this.cache.delete(oldestKey);
+        }
+        this.cache.set(key, value);
+    }
+}
+```
+
+#### Go
+```go
+type LRUCache struct {
+    capacity int
+    cache    map[int]int
+    order    *list.List
+    keys     map[int]*list.Element
+}
+
+type entry struct {
+    key   int
+    value int
+}
+
+func Constructor(capacity int) LRUCache {
+    return LRUCache{
+        capacity: capacity,
+        cache:    make(map[int]int),
+        order:    list.New(),
+        keys:     make(map[int]*list.Element),
+    }
+}
+
+func (this *LRUCache) Get(key int) int {
+    if elem, ok := this.keys[key]; ok {
+        this.order.MoveToFront(elem)
+        return elem.Value.(*entry).value
+    }
+    return -1
+}
+
+func (this *LRUCache) Put(key int, value int) {
+    if elem, ok := this.keys[key]; ok {
+        this.order.MoveToFront(elem)
+        elem.Value.(*entry).value = value
+    } else {
+        if len(this.cache) >= this.capacity {
+            oldest := this.order.Back()
+            this.order.Remove(oldest)
+            delete(this.cache, oldest.Value.(*entry).key)
+            delete(this.keys, oldest.Value.(*entry).key)
+        }
+        elem := this.order.PushFront(&entry{key, value})
+        this.keys[key] = elem
+        this.cache[key] = value
+    }
+}
+```
+
+### 2. Minimum Window Substring
+
+#### Problem
+Given two strings `s` and `t`, return the minimum window in `s` which will contain all the characters in `t`.
+
+#### Java
+```java
+import java.util.*;
+
+public class MinimumWindowSubstring {
+    public String minWindow(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) return "";
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        int left = 0, right = 0, count = t.length(), minLen = Integer.MAX_VALUE, minStart = 0;
+        while (right < s.length()) {
+            if (map.getOrDefault(s.charAt(right), 0) > 0) count--;
+            map.put(s.charAt(right), map.getOrDefault(s.charAt(right), 0) - 1);
+            right++;
+            while (count == 0) {
+                if (right - left < minLen) {
+                    minLen = right - left;
+                    minStart = left;
+                }
+                map.put(s.charAt(left), map.getOrDefault(s.charAt(left), 0) + 1);
+                if (map.get(s.charAt(left)) > 0) count++;
+                left++;
+            }
+        }
+        return minLen == Integer.MAX_VALUE ? "" : s.substring(minStart, minStart + minLen);
+    }
+}
+```
+
+#### JavaScript
+```javascript
+var minWindow = function(s, t) {
+    if (!s || !t || s.length < t.length) return "";
+    const map = new Map();
+    for (let char of t) {
+        map.set(char, (map.get(char) || 0) + 1);
+    }
+    let left = 0, right = 0, count = t.length, minLen = Infinity, minStart = 0;
+    while (right < s.length) {
+        if (map.get(s[right]) > 0) count--;
+        map.set(s[right], (map.get(s[right]) || 0) - 1);
+        right++;
+        while (count === 0) {
+            if (right - left < minLen) {
+                minLen = right - left;
+                minStart = left;
+            }
+            map.set(s[left], (map.get(s[left]) || 0) + 1);
+            if (map.get(s[left]) > 0) count++;
+            left++;
+        }
+    }
+    return minLen === Infinity ? "" : s.substring(minStart, minStart + minLen);
+};
+```
+
+#### Go
+```go
+func minWindow(s string, t string) string {
+    if len(s) < len(t) {
+        return ""
+    }
+    countT := make(map[byte]int)
+    for i := 0; i < len(t); i++ {
+        countT[t[i]]++
+    }
+    left, right, count, minLen, minStart := 0, 0, len(t), len(s)+1, 0
+    for right < len(s) {
+        if countT[s[right]] > 0 {
+            count--
+        }
+        countT[s[right]]--
+        right++
+        for count == 0 {
+            if right-left < minLen {
+                minLen = right - left
+                minStart = left
+            }
+            countT[s[left]]++
+            if countT[s[left]] > 0 {
+                count++
+            }
+            left++
+        }
+    }
+    if minLen > len(s) {
+        return ""
+    }
+    return s[minStart:minStart+minLen]
+}
+```
+
+### Explanation
+
+#### LRU Cache
+- **Java**: Uses a combination of `HashMap` and `LinkedHashMap` to maintain the order of elements and ensure O(1) access time.
+- **JavaScript**: Uses a `Map` to store the cache and maintain the order of elements.
+- **Go**: Uses a combination of `map` and `list.List` to maintain the order of elements and ensure O(1) access time.
+
+#### Minimum Window Substring
+- **Java**: Uses a sliding window approach with two pointers and a `HashMap` to keep track of the characters in the window.
+- **JavaScript**: Similar to the Java implementation, uses a sliding window approach with two pointers and a `Map`.
+- **Go**: Uses a sliding window approach with two pointers and a `map` to keep track of the characters in the window.
+
+I hope this helps! If you have any more questions or need further clarification, feel free to ask. 😊
+
+Source: Conversation with Copilot, 2/11/2025
+(1) github.com. https://github.com/codedecks-in/LeetCode-Solutions/tree/42b5e1748f271ab3ea5113fdc2cf19f0b47a866e/JavaScript%2F146.LRU-Cache.js.
+(2) github.com. https://github.com/henryfordstick/blog/tree/ad771d679b2d4241c1938c7494979dfcef5632bd/docs%2Farith%2Farith-source-lru.md.
+(3) github.com. https://github.com/iyybpatrick/LeetCode/tree/588171ee7de44383ea2b37d0c054fd0303288572/JAVA%2FTag%20order%2FHash%20Table%2F_76MinimumWindowSubstring.java.
+(4) github.com. https://github.com/jimty0511/algorithmPractice/tree/dd524388e9d5c70ee97869b63465f3cd171f9460/src%2Fmain%2Fjava%2Fpractice%2Fproblem%2FMinimumWindowSubstring.java.
+(5) github.com. https://github.com/SawyerRen/notes/tree/75f1369f17ded95747c71fc96eeae722905e47d7/codes%2Fsrc%2Fcompany%2Ffbr3%2FQ76.java.

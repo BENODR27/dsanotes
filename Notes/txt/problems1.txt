@@ -1,0 +1,124 @@
+Here’s a **detailed problem list with LeetCode links** based on the **12-week FAANG roadmap**. 🚀  
+
+---
+
+## **🔥 Week 1-2: Arrays, Strings, Hashing**
+### **Arrays**
+1. [Two Sum](https://leetcode.com/problems/two-sum/)  
+2. [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)  
+3. [Merge Intervals](https://leetcode.com/problems/merge-intervals/)  
+4. [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/)  
+5. [Rotate Array](https://leetcode.com/problems/rotate-array/)  
+
+### **Strings**
+6. [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)  
+7. [Valid Anagram](https://leetcode.com/problems/valid-anagram/)  
+8. [Longest Common Prefix](https://leetcode.com/problems/longest-common-prefix/)  
+9. [Reverse Words in a String](https://leetcode.com/problems/reverse-words-in-a-string/)  
+
+### **Hashing**
+10. [Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)  
+11. [Group Anagrams](https://leetcode.com/problems/group-anagrams/)  
+12. [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/)  
+13. [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)  
+
+---
+
+## **🔥 Week 3-4: Linked Lists, Stacks & Queues**
+### **Linked Lists**
+14. [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/)  
+15. [Detect Cycle in Linked List](https://leetcode.com/problems/linked-list-cycle/)  
+16. [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/)  
+17. [Add Two Numbers](https://leetcode.com/problems/add-two-numbers/)  
+
+### **Stacks & Queues**
+18. [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)  
+19. [Min Stack](https://leetcode.com/problems/min-stack/)  
+20. [Implement Queue using Stack](https://leetcode.com/problems/implement-queue-using-stacks/)  
+21. [Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/)  
+
+### **LRU Cache & Sliding Window**
+22. [LRU Cache](https://leetcode.com/problems/lru-cache/)  
+23. [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/)  
+
+---
+
+## **🔥 Week 5-6: Trees, BST, Recursion & Backtracking**
+### **Trees**
+24. [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)  
+25. [Lowest Common Ancestor](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/)  
+26. [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/)  
+
+### **Recursion & Backtracking**
+27. [N-Queens](https://leetcode.com/problems/n-queens/)  
+28. [Generate Parentheses](https://leetcode.com/problems/generate-parentheses/)  
+29. [Word Search](https://leetcode.com/problems/word-search/)  
+30. [Subsets](https://leetcode.com/problems/subsets/)  
+
+### **Binary Search Trees**
+31. [Kth Smallest Element in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/)  
+32. [Construct Binary Tree from Preorder & Inorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)  
+
+---
+
+## **🔥 Week 7-8: Heaps, Graphs, and Advanced Topics**
+### **Heaps**
+33. [Kth Largest Element in an Array](https://leetcode.com/problems/kth-largest-element-in-an-array/)  
+34. [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/)  
+35. [Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)  
+
+### **Graphs (BFS & DFS)**
+36. [Number of Islands](https://leetcode.com/problems/number-of-islands/)  
+37. [Clone Graph](https://leetcode.com/problems/clone-graph/)  
+38. [Course Schedule (Topological Sort)](https://leetcode.com/problems/course-schedule/)  
+
+### **Dijkstra’s Algorithm & Bellman-Ford**
+39. [Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/)  
+40. [Network Delay Time](https://leetcode.com/problems/network-delay-time/)  
+
+---
+
+## **🔥 Week 9-10: Dynamic Programming (DP) & Bit Manipulation**
+### **Dynamic Programming**
+41. [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/)  
+42. [House Robber](https://leetcode.com/problems/house-robber/)  
+43. [Coin Change](https://leetcode.com/problems/coin-change/)  
+44. [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)  
+45. [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)  
+46. [Edit Distance](https://leetcode.com/problems/edit-distance/)  
+
+### **Bit Manipulation**
+47. [Single Number](https://leetcode.com/problems/single-number/)  
+48. [XOR of an Array](https://leetcode.com/problems/single-number-iii/)  
+49. [Power of Two](https://leetcode.com/problems/power-of-two/)  
+
+---
+
+## **🔥 Week 11-12: System Design & Mock Interviews**
+### **System Design**
+📌 **No LeetCode links – Prepare from**:  
+- [Grokking the System Design Interview](https://www.educative.io/courses/grokking-the-system-design-interview)  
+- [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)  
+- [System Design Primer (GitHub)](https://github.com/donnemartin/system-design-primer)  
+
+---
+
+## **🔥 Final Stretch:**
+- **Last 2 weeks:**  
+  - Revise **Blind 75 Problems**  
+  - Take **Mock Interviews on Pramp / LeetCode Premium**  
+  - Read **FAANG Interview Guides**  
+
+---
+
+## **🔥 Bonus Tips**
+✅ **Focus on Problem-Solving Speed** → Target **40 min max per problem**  
+✅ **Discuss Solutions Aloud** → Explaining builds clarity (use Peer Coding / LeetCode Discuss)  
+✅ **Optimize Code** → Start with brute force, then improve  
+✅ **Mock Interviews** → Do **3+ real interviews** before FAANG interviews  
+✅ **Behavioral Questions** → Prepare **STAR (Situation, Task, Action, Result)** for HR rounds  
+
+---
+
+This roadmap is **optimized for FAANG preparation**. 🚀  
+Need **PDFs / Extra FAANG resources**? Let me know! 🔥

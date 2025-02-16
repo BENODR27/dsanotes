@@ -1,8 +1,10 @@
-Preparing for a FAANG (Facebook, Amazon, Apple, Netflix, Google) interview requires a structured and comprehensive approach. These companies are known for their rigorous technical interviews, which often include algorithmic problem-solving, system design, behavioral questions, and sometimes domain-specific knowledge. Below is a detailed plan to help you prepare effectively:
+Preparing for a FAANG (Facebook, Amazon, Apple, Netflix, Google) interview requires a structured and comprehensive approach. 
+These companies are known for their rigorous technical interviews, which often include algorithmic problem-solving, 
+system design, behavioral questions, and sometimes domain-specific knowledge. Below is a detailed plan to help you prepare effectively:
 
 ---
 
-### **1. Understand the Interview Process**
+### **1. Understand the Iv Process**
 Before diving into preparation, familiarize yourself with the typical FAANG interview process:
 - **Online Assessment**: Coding challenges on platforms like HackerRank or LeetCode.
 - **Phone Screen**: Technical screening with an HR representative or engineer.
@@ -12,7 +14,8 @@ Before diving into preparation, familiarize yourself with the typical FAANG inte
 ---
 
 ### **2. Create a Study Plan**
-Divide your preparation into three main areas: **Coding**, **System Design**, and **Behavioral Questions**. Allocate time based on your current skill level and the duration you have before the interview.
+Divide your preparation into three main areas: **Coding**, **System Design**, and **Behavioral Questions**. 
+Allocate time based on your current skill level and the duration you have before the interview.
 
 #### **A. Coding Preparation**
 Focus on mastering algorithms, data structures, and problem-solving skills.

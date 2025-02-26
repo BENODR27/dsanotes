@@ -1,0 +1,171 @@
+## **Trees Overview**  
+A **Tree** is a hierarchical data structure consisting of nodes connected by edges. Each tree has a root node, from which child nodes branch out. Trees are widely used in data structures, databases, and AI.
+
+### **Binary Tree (BT)**  
+A **Binary Tree** is a tree in which each node has at most two children: **left** and **right**.
+
+### **Binary Search Tree (BST)**  
+A **BST** is a special type of Binary Tree where:  
+- The left subtree contains only nodes with values **less than** the parent node.  
+- The right subtree contains only nodes with values **greater than** the parent node.  
+- Both left and right subtrees must also be BSTs.
+
+---
+
+## **24. Binary Tree Level Order Traversal**  
+### **Problem Statement**  
+Given a binary tree, return its level order traversal (i.e., nodes are visited level by level from left to right).
+
+### **Example**  
+#### **Input:**  
+```
+        3
+       / \
+      9   20
+         /  \
+        15   7
+```
+#### **Output:**  
+```
+[
+  [3],
+  [9, 20],
+  [15, 7]
+]
+```
+
+### **Approach**  
+- Use a **queue** (BFS) to traverse the tree level by level.
+- Store each level’s nodes in a list and push it to the final result.
+
+### **Java Code:**
+```java
+import java.util.*;
+
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
+public class LevelOrderTraversal {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+        
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        
+        while (!queue.isEmpty()) {
+            List<Integer> level = new ArrayList<>();
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                level.add(node.val);
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+            result.add(level);
+        }
+        return result;
+    }
+}
+```
+**Time Complexity:** \(O(N)\)  
+**Space Complexity:** \(O(N)\)  
+
+---
+
+## **25. Lowest Common Ancestor (LCA) of a Binary Tree**  
+### **Problem Statement**  
+Given a binary tree and two nodes, find their **lowest common ancestor (LCA)**. The LCA is the deepest node that is an ancestor of both nodes.
+
+### **Example**  
+#### **Input:**  
+```
+        3
+       / \
+      5   1
+     / \  / \
+    6   2 0  8
+       / \
+      7   4
+```
+Find LCA of **5** and **1** → Output **3**  
+Find LCA of **5** and **4** → Output **5**  
+
+### **Approach**  
+- If the root is **null** or matches **p** or **q**, return root.
+- Recursively search left and right subtrees.
+- If both left and right return non-null values, current node is LCA.
+- If only one subtree returns non-null, that’s the LCA.
+
+### **Java Code:**
+```java
+class LowestCommonAncestor {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) return root;
+        
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        
+        if (left != null && right != null) return root;
+        return (left != null) ? left : right;
+    }
+}
+```
+**Time Complexity:** \(O(N)\)  
+**Space Complexity:** \(O(H)\) (where H is the height of the tree)  
+
+---
+
+## **26. Validate Binary Search Tree (BST)**  
+### **Problem Statement**  
+Given a binary tree, determine if it is a valid BST.
+
+### **Example**  
+#### **Input:**  
+```
+        2
+       / \
+      1   3
+```
+#### **Output:** `true`
+
+#### **Invalid BST Example:**  
+```
+        5
+       / \
+      1   4
+         / \
+        3   6
+```
+#### **Output:** `false` (since `3 < 5`, it violates BST property)
+
+### **Approach**  
+- Perform an **in-order traversal** (Left → Root → Right).
+- Ensure values are strictly increasing.
+- Alternatively, use **recursion** with min-max constraints.
+
+### **Java Code:**
+```java
+class ValidateBST {
+    public boolean isValidBST(TreeNode root) {
+        return validate(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    
+    private boolean validate(TreeNode node, long min, long max) {
+        if (node == null) return true;
+        if (node.val <= min || node.val >= max) return false;
+        
+        return validate(node.left, min, node.val) && validate(node.right, node.val, max);
+    }
+}
+```
+**Time Complexity:** \(O(N)\)  
+**Space Complexity:** \(O(H)\)  
+
+---
+
+These three problems are fundamental in understanding trees, traversal techniques, and validation logic in BSTs. Let me know if you need any modifications or explanations! 🚀

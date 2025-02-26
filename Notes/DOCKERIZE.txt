@@ -1,0 +1,297 @@
+To dockerize your Angular 19 frontend app, Spring Boot backend (AuthGuard), and Node.js backend (WMS), and deploy them using Nginx with both development and production environments, you can follow these steps:
+
+### 1. Create Dockerfiles for Each Application
+
+#### Angular 19 Frontend
+Create a `Dockerfile` in the root of your Angular project:
+```dockerfile
+# Stage 1: Build the Angular app
+FROM node:18-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build --configuration production
+
+# Stage 2: Serve the app with Nginx
+FROM nginx:stable-alpine
+COPY --from=build /app/dist/my-angular-app /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+#### Spring Boot Backend (AuthGuard)
+Create a `Dockerfile` in the root of your Spring Boot project:
+```dockerfile
+# Stage 1: Build the application
+FROM maven:3.8.4-openjdk-11 AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM openjdk:11-jre-slim
+WORKDIR /app
+COPY --from=build /app/target/authguard.jar /app/authguard.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "authguard.jar"]
+```
+
+#### Node.js Backend (WMS)
+Create a `Dockerfile` in the root of your Node.js project:
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+### 2. Create a Docker Compose File
+Create a `docker-compose.yml` file in the root of your project to define and run multi-container Docker applications:
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+
+  authguard:
+    build:
+      context: ./authguard
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  wms:
+    build:
+      context: ./wms
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+```
+
+### 3. Create Environment-Specific Docker Compose Files
+Create `docker-compose.dev.yml` for development:
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    environment:
+      - NODE_ENV=development
+
+  authguard:
+    build:
+      context: ./authguard
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  wms:
+    build:
+      context: ./wms
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+```
+
+### 4. Build and Deploy with a Single Command
+To build and deploy your applications, use the following commands:
+
+- For production:
+  ```bash
+  docker-compose -f docker-compose.yml up --build
+  ```
+
+- For development:
+  ```bash
+  docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+  ```
+
+These steps will help you dockerize and deploy your Angular frontend, Spring Boot backend, and Node.js backend applications with Nginx, using both development and production environments¹(https://www.javachinna.com/angular-nginx-spring-boot-mysql-docker-compose/)²(https://dev.to/narek_babajanyan/containerizing-a-springangular-application-with-docker-compose-1faj)³(https://dev.to/rodrigokamada/creating-and-running-an-angular-application-in-a-docker-container-40mk).
+
+If you have any specific questions or run into issues, feel free to ask!
+
+Source: Conversation with Copilot, 2/26/2025
+(1) How to Dockerize Angular with NGINX and Spring Boot with MySQL using .... https://www.javachinna.com/angular-nginx-spring-boot-mysql-docker-compose/.
+(2) Containerizing a Spring/Angular application with Docker Compose. https://dev.to/narek_babajanyan/containerizing-a-springangular-application-with-docker-compose-1faj.
+(3) Creating and running an Angular application in a Docker container. https://dev.to/rodrigokamada/creating-and-running-an-angular-application-in-a-docker-container-40mk.
+(4) Docker & Angular: Dockerizing your Angular Application in 10 min for Beginners. https://www.youtube.com/watch?v=GXf0y_nUIZE.
+(5) How to dockerize your angular project?. https://www.youtube.com/watch?v=rbmHXqcXInA.
+(6) Dockerize an Angular Application using Nginx. https://www.youtube.com/watch?v=-o5l6zFJ9_o.
+
+
+
+
+
+
+
+To deploy your Dockerized Angular 19 frontend app, Spring Boot backend (AuthGuard), and Node.js backend (WMS) on an Ubuntu server for production, follow these steps:
+
+### 1. Prepare Your Ubuntu Server
+Ensure your server is up-to-date and has Docker and Docker Compose installed:
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install docker.io -y
+sudo apt install docker-compose -y
+```
+
+### 2. Transfer Your Project to the Server
+Copy your project files to the server. You can use `scp` or any other file transfer method:
+```bash
+scp -r /path/to/your/project user@your-server-ip:/path/to/destination
+```
+
+### 3. Create Dockerfiles for Each Application
+Ensure you have Dockerfiles for your Angular frontend, Spring Boot backend, and Node.js backend as described earlier.
+
+### 4. Create a Docker Compose File
+Create a `docker-compose.yml` file in the root of your project to define and run multi-container Docker applications:
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+
+  authguard:
+    build:
+      context: ./authguard
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  wms:
+    build:
+      context: ./wms
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+```
+
+### 5. Configure Nginx
+Create an Nginx configuration file to reverse proxy your services. For example, create a `nginx.conf` file:
+```nginx
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://frontend:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/authguard {
+        proxy_pass http://authguard:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /api/wms {
+        proxy_pass http://wms:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### 6. Update Docker Compose for Nginx
+Add Nginx to your `docker-compose.yml` file:
+```yaml
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+
+  authguard:
+    build:
+      context: ./authguard
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  wms:
+    build:
+      context: ./wms
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - authguard
+      - wms
+```
+
+### 7. Deploy Your Application
+Navigate to your project directory on the server and run:
+```bash
+docker-compose up --build -d
+```
+
+This command will build and start all your services in detached mode.
+
+### 8. Verify Deployment
+Ensure all services are running correctly:
+```bash
+docker-compose ps
+```
+
+You should now be able to access your application via your server's IP address.
+
+If you encounter any issues or need further assistance, feel free to ask!
+
+Source: Conversation with Copilot, 2/26/2025
+(1) Containerizing a Spring/Angular application with Docker Compose. https://dev.to/narek_babajanyan/containerizing-a-springangular-application-with-docker-compose-1faj.
+(2) How to Dockerize Angular with NGINX and Spring Boot with MySQL using .... https://www.javachinna.com/angular-nginx-spring-boot-mysql-docker-compose/.
+(3) Creating and running an Angular application in a Docker container. https://dev.to/rodrigokamada/creating-and-running-an-angular-application-in-a-docker-container-40mk.
+
+
+
+

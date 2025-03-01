@@ -1,0 +1,177 @@
+To use Traefik as a professional reverse proxy and load balancer in your Docker Compose setup, you need to integrate Traefik into your existing configuration. Below is a step-by-step guide to enhance your `docker-compose.yml` file with Traefik for version `3.8`.
+
+---
+
+### **Updated `docker-compose.yml` with Traefik**
+
+```yaml
+version: '3.8'
+
+services:
+  traefik:
+    image: "traefik:v2.9" # Use the latest stable version of Traefik
+    command:
+      - "--api.insecure=true" # Enable API dashboard (for testing purposes only)
+      - "--providers.docker=true" # Enable Docker provider
+      - "--entrypoints.web.address=:80" # Define HTTP entry point
+      - "--entrypoints.websecure.address=:443" # Define HTTPS entry point
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true" # Optional: For Let's Encrypt certificates
+      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8081:8080" # Traefik dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro" # Access Docker socket
+      - "./acme.json:/letsencrypt/acme.json" # Optional: For Let's Encrypt certificates
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`traefik.example.com`)" # Replace with your domain
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=web"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.example.com`)" # Replace with your domain
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.tls=true" # Optional: Enable HTTPS
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver" # Optional: Use Let's Encrypt
+
+  authguard:
+    build:
+      context: ./authguard
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authguard.rule=Host(`authguard.example.com`)" # Replace with your domain
+      - "traefik.http.services.authguard.loadbalancer.server.port=8080"
+      - "traefik.http.routers.authguard.entrypoints=web"
+      - "traefik.http.routers.authguard.tls=true" # Optional: Enable HTTPS
+      - "traefik.http.routers.authguard.tls.certresolver=myresolver" # Optional: Use Let's Encrypt
+
+  wms:
+    build:
+      context: ./wms
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+    networks:
+      - traefik-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wms.rule=Host(`wms.example.com`)" # Replace with your domain
+      - "traefik.http.services.wms.loadbalancer.server.port=3000"
+      - "traefik.http.routers.wms.entrypoints=web"
+      - "traefik.http.routers.wms.tls=true" # Optional: Enable HTTPS
+      - "traefik.http.routers.wms.tls.certresolver=myresolver" # Optional: Use Let's Encrypt
+
+networks:
+  traefik-network:
+    external: true
+```
+
+---
+
+### **Explanation of Configuration**
+
+#### **1. Traefik Service**
+- **Image**: Uses the official Traefik image (`traefik:v2.9`).
+- **Command**:
+  - `--api.insecure=true`: Enables the Traefik dashboard for testing purposes. Disable this in production.
+  - `--providers.docker=true`: Configures Traefik to automatically discover services from Docker containers.
+  - `--entrypoints.web.address=:80`: Defines the HTTP entry point.
+  - `--entrypoints.websecure.address=:443`: Defines the HTTPS entry point.
+  - `--certificatesresolvers.myresolver`: Configures Let's Encrypt for automatic SSL certificates (optional).
+- **Ports**:
+  - `80:80`: Maps the host's port 80 to the container's port 80 for HTTP traffic.
+  - `443:443`: Maps the host's port 443 to the container's port 443 for HTTPS traffic.
+  - `8081:8080`: Maps the host's port 8081 to the container's port 8080 for the Traefik dashboard.
+- **Volumes**:
+  - `/var/run/docker.sock`: Grants Traefik access to the Docker daemon.
+  - `./acme.json`: Stores Let's Encrypt certificates (if enabled).
+
+#### **2. Application Services**
+Each service (`frontend`, `authguard`, `wms`) is configured with:
+- **Network**: Attached to the `traefik-network` for communication with Traefik.
+- **Labels**:
+  - `traefik.enable=true`: Enables Traefik for the service.
+  - `traefik.http.routers.<service>.rule`: Defines the routing rule based on the host domain.
+  - `traefik.http.services.<service>.loadbalancer.server.port`: Specifies the port exposed by the service.
+  - `traefik.http.routers.<service>.entrypoints`: Associates the router with the `web` entry point.
+  - `traefik.http.routers.<service>.tls`: Enables HTTPS (optional).
+  - `traefik.http.routers.<service>.tls.certresolver`: Uses Let's Encrypt for SSL certificates (optional).
+
+#### **3. Networks**
+- A custom network `traefik-network` is defined and used by all services, including Traefik.
+
+---
+
+### **How It Works**
+
+1. **Traefik Automatically Discovers Services**:
+   - Traefik reads the container labels to configure routes and load balancing for each service.
+   - The `Host` rule ensures that requests to specific domains are routed to the correct service.
+
+2. **Load Balancing**:
+   - If multiple replicas of a service are running, Traefik will distribute traffic across them.
+
+3. **HTTPS with Let's Encrypt (Optional)**:
+   - If you enable the `tls` labels and provide a valid email address, Traefik will automatically obtain and renew SSL certificates from Let's Encrypt.
+
+---
+
+### **Steps to Run**
+
+1. **Create the Network**:
+   ```bash
+   docker network create traefik-network
+   ```
+
+2. **Start the Services**:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access the Applications**:
+   - Frontend: `http://frontend.example.com` or `https://frontend.example.com` (if TLS is enabled).
+   - AuthGuard: `http://authguard.example.com` or `https://authguard.example.com`.
+   - WMS: `http://wms.example.com` or `https://wms.example.com`.
+
+4. **Access the Traefik Dashboard**:
+   - Navigate to `http://traefik.example.com:8081` (replace with your domain).
+
+---
+
+### **Best Practices**
+
+1. **Use External DNS**:
+   - Ensure your domains (`frontend.example.com`, `authguard.example.com`, etc.) point to the server running Traefik.
+
+2. **Disable Insecure API**:
+   - Remove `--api.insecure=true` in production and secure the dashboard with authentication.
+
+3. **Persistent Storage for Certificates**:
+   - Use a persistent volume for `acme.json` to store Let's Encrypt certificates.
+
+4. **Monitor Logs**:
+   - Use `docker logs traefik` to monitor Traefik logs for debugging.
+
+---
+
+This setup ensures a professional-grade reverse proxy and load balancer for your microservices architecture using Traefik.

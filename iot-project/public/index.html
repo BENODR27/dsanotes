@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IoT Sensor Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>IoT Sensor Data Dashboard</h1>
+    <pre id="dashboard">Waiting for data...</pre>
+
+    <!-- Socket.io script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      // Listen for sensor data updates
+      socket.on("updateDashboard", (data) => {
+        document.getElementById("dashboard").innerText = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      });
+    </script>
+  </body>
+</html>

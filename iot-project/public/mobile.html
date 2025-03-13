@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Android Sensor Node</title>
+  </head>
+  <body>
+    <h1>Sensor Node</h1>
+    <p>Sending sensor data to the server...</p>
+
+    <!-- Socket.io script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io("http://192.168.22.115:3010");
+
+      // Function to collect sensor data
+      async function sendSensorData() {
+        const data = {
+          timestamp: new Date(),
+          // For demonstration: simulate battery level or use navigator.getBattery()
+          battery: Math.floor(Math.random() * 100),
+          // You can add other sensor data such as accelerometer or geolocation here
+        };
+
+        // If your device supports the Battery API:
+        if (navigator.getBattery) {
+          try {
+            const battery = await navigator.getBattery();
+            data.battery = Math.floor(battery.level * 100);
+          } catch (err) {
+            console.error("Battery API error:", err);
+          }
+        }
+
+        socket.emit("sensorData", data);
+      }
+
+      // Send sensor data every 5 seconds
+      setInterval(sendSensorData, 5000);
+    </script>
+  </body>
+</html>

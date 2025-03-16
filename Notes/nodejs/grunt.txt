@@ -1,0 +1,211 @@
+# 🚀 **Grunt: Automate Tasks in Node.js Like a Pro**  
+
+**Grunt** is a **task runner** for **automating repetitive tasks** like:  
+✅ **Minifying JavaScript & CSS**  
+✅ **Compiling Sass/Less**  
+✅ **Running tests**  
+✅ **Linting code**  
+✅ **Live reloading**  
+
+---
+
+# **📌 1. Install Grunt in Your Project**
+First, initialize a **Node.js project** (if you haven’t already):
+```sh
+npm init -y
+```
+Then, install **Grunt CLI** globally:
+```sh
+npm install -g grunt-cli
+```
+Now, install **Grunt locally**:
+```sh
+npm install grunt --save-dev
+```
+✅ **Now Grunt is ready!** 🎯
+
+---
+
+# **📌 2. Create a `Gruntfile.js`**
+This is where all **Grunt tasks** are configured.
+
+### **Example: A Basic Grunt Task**
+Create a file called **`Gruntfile.js`** and add:
+```js
+module.exports = function (grunt) {
+  // Configuration
+  grunt.initConfig({
+    pkg: grunt.file.readJSON("package.json"),
+    
+    // Example task: Minify JavaScript
+    uglify: {
+      build: {
+        src: "src/app.js",
+        dest: "dist/app.min.js",
+      },
+    },
+  });
+
+  // Load Plugins
+  grunt.loadNpmTasks("grunt-contrib-uglify");
+
+  // Register Default Task
+  grunt.registerTask("default", ["uglify"]);
+};
+```
+✅ **This minifies `src/app.js` into `dist/app.min.js`.**
+
+---
+
+# **📌 3. Run Grunt Tasks**
+Now, run **Grunt**:
+```sh
+grunt
+```
+🎯 **Grunt will execute the default task (minification in this case).**
+
+---
+
+# **📌 4. Automating Common Tasks**
+## **1️⃣ Minify JavaScript**
+```sh
+npm install grunt-contrib-uglify --save-dev
+```
+Add this to `Gruntfile.js`:
+```js
+uglify: {
+  build: {
+    src: "src/app.js",
+    dest: "dist/app.min.js",
+  },
+},
+```
+Run it:
+```sh
+grunt uglify
+```
+
+---
+
+## **2️⃣ Minify CSS**
+```sh
+npm install grunt-contrib-cssmin --save-dev
+```
+In `Gruntfile.js`:
+```js
+cssmin: {
+  target: {
+    files: {
+      "dist/styles.min.css": ["src/styles.css"],
+    },
+  },
+},
+```
+Run it:
+```sh
+grunt cssmin
+```
+
+---
+
+## **3️⃣ Compile Sass to CSS**
+```sh
+npm install grunt-contrib-sass --save-dev
+```
+In `Gruntfile.js`:
+```js
+sass: {
+  dist: {
+    files: {
+      "dist/styles.css": "src/styles.scss",
+    },
+  },
+},
+```
+Run it:
+```sh
+grunt sass
+```
+
+---
+
+## **4️⃣ Lint JavaScript (ESLint)**
+```sh
+npm install grunt-eslint --save-dev
+```
+In `Gruntfile.js`:
+```js
+eslint: {
+  target: ["src/**/*.js"],
+},
+```
+Run it:
+```sh
+grunt eslint
+```
+
+---
+
+## **5️⃣ Live Reloading with Watch**
+```sh
+npm install grunt-contrib-watch --save-dev
+```
+In `Gruntfile.js`:
+```js
+watch: {
+  scripts: {
+    files: ["src/**/*.js"],
+    tasks: ["uglify"],
+    options: { spawn: false },
+  },
+},
+```
+Run it:
+```sh
+grunt watch
+```
+🎯 **Grunt will watch for file changes & rerun tasks automatically!**
+
+---
+
+# **📌 5. Running Multiple Tasks in One Command**
+You can define **multiple tasks** in one command:
+```js
+grunt.registerTask("build", ["uglify", "cssmin", "sass", "eslint"]);
+```
+Now run:
+```sh
+grunt build
+```
+✅ **This will minify JavaScript & CSS, compile Sass, and lint JS at once!**
+
+---
+
+# **📌 6. Automate Testing (Mocha)**
+```sh
+npm install grunt-mocha-test --save-dev
+```
+In `Gruntfile.js`:
+```js
+mochaTest: {
+  test: {
+    src: ["tests/**/*.js"],
+  },
+},
+```
+Run tests:
+```sh
+grunt mochaTest
+```
+
+---
+
+# **📌 Summary**
+Grunt **automates**:  
+✔ Minifying files (`uglify`, `cssmin`)  
+✔ Compiling (`sass`)  
+✔ Linting (`eslint`)  
+✔ Testing (`mochaTest`)  
+✔ Live reloading (`watch`)  
+
+Would you like a **Grunt setup for an eCommerce project**? 🚀

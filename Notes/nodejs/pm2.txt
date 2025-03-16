@@ -1,0 +1,187 @@
+PM2 is a popular process manager for Node.js applications that helps ensure continuous application execution, load balancing, and process monitoring.Here's a professional guide on how to use PM2 for managing your Node.js application:
+
+### 1. ** Installation **
+    First, you need to install PM2 globally on your system.
+
+   ```bash
+   npm install pm2 -g
+   ```
+
+   This allows you to access PM2 commands globally.
+
+### 2. ** Starting the Application **
+    To start your Node.js application with PM2, simply use:
+
+    ```bash
+   pm2 start app.js --name myapp
+   ```
+
+        - `app.js`: Your main application file.
+   - `--name myapp`: This specifies a custom name for your application(optional).
+
+### 3. ** Process Management **
+    PM2 allows you to easily manage multiple processes.
+
+   - To list running processes:
+
+```bash
+     pm2 list
+     ```
+
+    - To stop a process:
+
+```bash
+     pm2 stop myapp
+     ```
+
+    - To restart a process:
+
+```bash
+     pm2 restart myapp
+     ```
+
+    - To delete a process:
+
+```bash
+     pm2 delete myapp
+     ```
+
+### 4. ** Load Balancing **
+    PM2 provides load balancing through its cluster mode, which allows your app to take full advantage of multi - core systems.
+
+   - To start your app in cluster mode:
+
+```bash
+     pm2 start app.js -i max
+     ```
+
+The `-i max` flag starts as many instances as the number of available CPU cores.
+
+### 5. ** Process Monitoring **
+    PM2 provides an intuitive monitoring interface where you can view CPU and memory usage of all processes in real - time.
+
+   - To view logs:
+
+```bash
+     pm2 logs
+     ```
+
+    - To monitor the application:
+
+```bash
+     pm2 monit
+     ```
+
+     This shows a real - time dashboard with application performance stats.
+
+### 6. ** Managing Environment Variables **
+    You can pass environment variables to your Node.js application using PM2.
+
+```bash
+   pm2 start app.js --env production
+   ```
+
+   You can define different environments in your`ecosystem.config.js` file for better configuration management.
+
+### 7. ** PM2 Ecosystem File **
+    The ecosystem file is a powerful tool for managing your application configuration, including environment variables, instances, and script execution options.
+
+   - Create an `ecosystem.config.js`:
+
+```javascript
+     module.exports = {
+       apps: [{
+         name: 'myapp',
+         script: 'app.js',
+         instances: 'max',
+         exec_mode: 'cluster',
+         env: {
+           NODE_ENV: 'development'
+         },
+         env_production: {
+           NODE_ENV: 'production'
+         }
+       }]
+     };
+     ```
+
+    - Start your application using the ecosystem file:
+
+        ```bash
+     pm2 start ecosystem.config.js --env production
+     ```
+
+### 8. ** Persistent Process with PM2 **
+PM2 ensures your application is automatically restarted on system reboots.
+
+   - To enable PM2 startup on system boot:
+
+```bash
+     pm2 startup
+     ```
+
+    - Save the current process list so it can be restored after a reboot:
+
+```bash
+     pm2 save
+     ```
+
+### 9. ** Logs Management **
+    PM2 manages logs for both output and error logs, storing them in log files for easier debugging.
+
+   - To view logs for a specific application:
+
+    ```bash
+     pm2 logs myapp
+     ```
+
+        - To clear all logs:
+
+```bash
+     pm2 flush
+     ```
+
+### 10. ** Auto Restarting on Crashes **
+    PM2 will automatically restart your application if it crashes, which ensures continuous uptime.
+
+### 11. ** Backup and Restore PM2 Process List **
+    If you need to back up your PM2 process list and restore it later:
+
+- Backup:
+
+```bash
+     pm2 dump
+     ```
+
+    - Restore:
+
+```bash
+     pm2 resurrect
+     ```
+
+### 12. ** Scaling Your Application **
+    PM2 allows you to scale your application dynamically, adjusting the number of instances based on load.
+
+   - Scale your app to a specific number of instances:
+
+```bash
+     pm2 scale myapp 4
+     ```
+
+   This command will scale your app to 4 instances.
+
+### 13. ** Monitoring with Keymetrics **
+PM2 offers integration with Keymetrics, a real - time monitoring platform, which provides more detailed metrics and insights into your app's performance.
+
+   To enable Keymetrics integration:
+
+- First, sign up at[Keymetrics](https://keymetrics.io).
+    - Use the following command to link your app:
+
+    ```bash
+     pm2 link <public-key> <private-key>
+     ```
+
+---
+
+    By incorporating PM2 into your Node.js deployment process, you ensure that your application is always running efficiently with built -in features for process management, monitoring, and scaling.This is essential for production environments where high availability and fault tolerance are critical.

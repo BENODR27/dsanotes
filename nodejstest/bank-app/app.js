@@ -76,7 +76,7 @@ app.post("/debit", (req, res) => {
     const { account_id, amount } = req.body;
 
     if (!account_id || !amount || amount <= 0) {
-        return res.status(400).send("⚠️ Invalid transaction request");
+        return res.status(400).send("⚠️ Invalid transaction request" + account_id);
     }
 
     // Retrieve current balance

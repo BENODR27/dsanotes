@@ -1,0 +1,244 @@
+Here’s the full code for a **bank application** with **debit transactions** and **debit history** functionality, using **Node.js** and **SQLite**:
+
+### **1. Create the project directory and install dependencies:**
+
+1. Create a new directory for your project:
+   ```bash
+   mkdir bank-app
+   cd bank-app
+   ```
+
+2. Initialize your Node.js project and install the required dependencies:
+   ```bash
+   npm init -y
+   npm install express sqlite3 body-parser
+   ```
+
+### **2. Full Bank Application Code**
+
+Create the `app.js` file with the following content:
+
+```javascript
+const express = require("express");
+const sqlite3 = require("sqlite3").verbose();
+const bodyParser = require("body-parser");
+
+const app = express();
+const db = new sqlite3.Database("./banking.db");
+
+// Middleware for parsing JSON requests
+app.use(bodyParser.json());
+
+// Create accounts table if not exists
+db.run(`
+  CREATE TABLE IF NOT EXISTS accounts (
+    account_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    balance INTEGER NOT NULL
+  )
+`);
+
+// Create the debit_history table
+db.run(`
+  CREATE TABLE IF NOT EXISTS debit_history (
+    transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    account_id INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id)
+  )
+`);
+
+// Route to create a new account
+app.post("/create-account", (req, res) => {
+    const { name, initial_balance } = req.body;
+
+    if (!name || !initial_balance || initial_balance <= 0) {
+        return res.status(400).send("⚠️ Invalid account creation request");
+    }
+
+    db.run("INSERT INTO accounts (name, balance) VALUES (?, ?)", [name, initial_balance], function (err) {
+        if (err) {
+            return res.status(500).send("❌ Server error");
+        }
+
+        res.json({
+            message: "✅ Account created successfully",
+            account_id: this.lastID,
+            initial_balance
+        });
+    });
+});
+
+// Route to view balance for a specific account
+app.get("/balance/:account_id", (req, res) => {
+    const accountId = req.params.account_id;
+
+    db.get("SELECT * FROM accounts WHERE account_id = ?", [accountId], (err, row) => {
+        if (err) {
+            return res.status(500).send("❌ Server error");
+        }
+
+        if (!row) {
+            return res.status(404).send("⚠️ Account not found");
+        }
+
+        res.json({
+            account_id: row.account_id,
+            name: row.name,
+            balance: row.balance
+        });
+    });
+});
+
+// Route to debit from an account and store transaction in debit_history
+app.post("/debit", (req, res) => {
+    const { account_id, amount } = req.body;
+
+    if (!account_id || !amount || amount <= 0) {
+        return res.status(400).send("⚠️ Invalid transaction request");
+    }
+
+    // Retrieve current balance
+    db.get("SELECT * FROM accounts WHERE account_id = ?", [account_id], (err, row) => {
+        if (err) {
+            return res.status(500).send("❌ Server error");
+        }
+
+        if (!row) {
+            return res.status(404).send("⚠️ Account not found");
+        }
+
+        // Check if balance is sufficient
+        if (row.balance < amount) {
+            return res.status(400).send("⚠️ Insufficient balance");
+        }
+
+        // Deduct the amount from the balance
+        const newBalance = row.balance - amount;
+
+        // Update the account balance
+        db.run("UPDATE accounts SET balance = ? WHERE account_id = ?", [newBalance, account_id], (err) => {
+            if (err) {
+                return res.status(500).send("❌ Server error");
+            }
+
+            // Store the debit transaction in the debit_history table
+            db.run("INSERT INTO debit_history (account_id, amount) VALUES (?, ?)", [account_id, amount], (err) => {
+                if (err) {
+                    return res.status(500).send("❌ Server error");
+                }
+
+                // Respond with success message and new balance
+                res.json({
+                    message: "✅ Debit transaction successful",
+                    new_balance: newBalance
+                });
+            });
+        });
+    });
+});
+
+// Route to get debit history of a specific account
+app.get("/debit-history/:account_id", (req, res) => {
+    const accountId = req.params.account_id;
+
+    db.all("SELECT * FROM debit_history WHERE account_id = ?", [accountId], (err, rows) => {
+        if (err) {
+            return res.status(500).send("❌ Server error");
+        }
+
+        if (rows.length === 0) {
+            return res.status(404).send("⚠️ No debit history found for this account");
+        }
+
+        // Prepare response with all debit transactions
+        let history = "<h1>Debit History</h1>";
+        rows.forEach(row => {
+            history += `
+                <p>Transaction ID: ${row.transaction_id} | Amount: ${row.amount} | Date: ${row.timestamp}</p>
+            `;
+        });
+
+        res.send(history);
+    });
+});
+
+// Start the server
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Bank API running on http://localhost:${PORT}`);
+});
+```
+
+### **3. Database Schema Explanation**
+
+- **accounts**: Holds basic account details (ID, name, and balance).
+- **debit_history**: Records each debit transaction (account ID, amount, and timestamp).
+
+### **4. How the Code Works**
+
+1. **Create Account (`/create-account`)**:
+   - Creates a new bank account with the given name and initial balance.
+
+2. **View Balance (`/balance/:account_id`)**:
+   - Retrieves and displays the balance of an account specified by its ID.
+
+3. **Debit Transaction (`/debit`)**:
+   - Allows you to debit money from a specific account, updates the balance, and logs the transaction in the debit history.
+
+4. **Debit History (`/debit-history/:account_id`)**:
+   - Displays the history of all debit transactions for a specific account.
+
+### **5. Example Requests**
+
+1. **Create Account Request**:
+   - **POST** `/create-account`
+     ```json
+     {
+       "name": "John Doe",
+       "initial_balance": 5000
+     }
+     ```
+
+2. **Debit Money Request**:
+   - **POST** `/debit`
+     ```json
+     {
+       "account_id": 1,
+       "amount": 1000
+     }
+     ```
+
+3. **View Account Balance Request**:
+   - **GET** `/balance/1`
+     ```json
+     {
+       "account_id": 1,
+       "name": "John Doe",
+       "balance": 4000
+     }
+     ```
+
+4. **View Debit History Request**:
+   - **GET** `/debit-history/1`
+     ```html
+     <h1>Debit History</h1>
+     <p>Transaction ID: 1 | Amount: 1000 | Date: 2025-03-16 10:00:00</p>
+     ```
+
+### **6. How to Run the App**
+
+1. Save the code to a file `app.js`.
+2. Run the app with Node.js:
+   ```bash
+   node app.js
+   ```
+
+3. Access the app at [http://localhost:3000](http://localhost:3000) through Postman, cURL, or a browser.
+
+---
+
+### **7. Conclusion**
+
+With this implementation, you have a **banking app** with the ability to **create accounts**, perform **debit transactions**, and view **debit history**. This application uses **Node.js** with **SQLite** for storage, and you can extend it with additional features like security (authentication, CSRF protection, etc.) as needed.

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banking App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f9;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      .container {
+        width: 60%;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+      }
+      .form-group input {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .button:hover {
+        background-color: #45a049;
+      }
+      .balance-info,
+      .debit-history {
+        margin-top: 20px;
+      }
+      .history-item {
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+      .alert {
+        color: red;
+        font-weight: bold;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Banking App</h1>
+
+      <!-- Account Creation Form -->
+      <h3>CREATE</h3>
+
+      <div class="form-group">
+        <label for="name">Account Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required />
+      </div>
+
+      <div class="form-group">
+        <label for="balance">Initial Balance</label>
+        <input
+          type="number"
+          id="balance"
+          placeholder="Enter initial balance"
+          required
+        />
+      </div>
+
+      <button class="button" onclick="createAccount()">Create Account</button>
+
+      <hr />
+      <h3>BALANCE</h3>
+
+      <!-- Balance Display -->
+      <div class="form-group">
+        <label for="account-id">Account ID</label>
+        <input type="number" id="account-id" placeholder="Enter Account ID" />
+      </div>
+
+      <button class="button" onclick="getBalance()">Check Balance</button>
+      <div id="balance-display"></div>
+
+      <hr />
+      <h3>DEBIT AMOUNT</h3>
+
+      <!-- Debit Amount Form -->
+      <div class="form-group">
+        <label for="debit-amount">Debit Amount</label>
+        <input
+          type="number"
+          id="debit-amount"
+          placeholder="Enter amount to debit"
+        />
+      </div>
+
+      <button class="button" onclick="debitAmount()">Debit Amount</button>
+
+      <hr />
+      <h3>DEBIT HISTORY</h3>
+
+      <!-- Debit History -->
+      <div class="form-group">
+        <label for="history-id">Account ID</label>
+        <input
+          type="number"
+          id="history-id"
+          placeholder="Enter Account ID for Transaction History"
+        />
+      </div>
+
+      <button class="button" onclick="getDebitHistory()">
+        View Debit History
+      </button>
+      <div id="history-display"></div>
+    </div>
+
+    <script>
+      const apiUrl = "http://localhost:3000"; // Your Node.js backend URL
+
+      // Function to create an account
+      async function createAccount() {
+        const name = document.getElementById("name").value;
+        const balance = parseFloat(document.getElementById("balance").value);
+
+        if (!name || isNaN(balance) || balance <= 0) {
+          alert("Please fill in all fields correctly.");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/create-account`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            initial_balance: balance,
+          }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert(result.message);
+          document.getElementById("name").value = "";
+          document.getElementById("balance").value = "";
+        } else {
+          alert(result.message || "Something went wrong.");
+        }
+      }
+
+      // Function to get account balance
+      async function getBalance() {
+        const accountId = document.getElementById("account-id").value;
+
+        if (!accountId) {
+          alert("Please enter an Account ID.");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/balance/${accountId}`);
+        const result = await response.json();
+        const balanceDisplay = document.getElementById("balance-display");
+
+        if (response.ok) {
+          balanceDisplay.innerHTML = `
+                    <h3>Account Balance</h3>
+                    <p>Account ID: ${result.account_id}</p>
+                    <p>Name: ${result.name}</p>
+                    <p>Balance: $${result.balance}</p>
+                `;
+        } else {
+          balanceDisplay.innerHTML = `<div class="alert">Error: ${result.message}</div>`;
+        }
+      }
+
+      // Function to debit amount
+      async function debitAmount() {
+        const accountId = document.getElementById("account-id").value;
+        const amount = parseFloat(
+          document.getElementById("debit-amount").value
+        );
+
+        if (!accountId || isNaN(amount) || amount <= 0) {
+          alert("Please fill in all fields correctly.");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/debit`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            account_id: accountId,
+            amount,
+          }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert(result.message);
+          getBalance();
+        } else {
+          alert(result.message || "Something went wrong.");
+        }
+      }
+
+      // Function to get debit history
+      async function getDebitHistory() {
+        const accountId = document.getElementById("history-id").value;
+
+        if (!accountId) {
+          alert("Please enter an Account ID.");
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/debit-history/${accountId}`);
+        const result = await response.text();
+        const historyDisplay = document.getElementById("history-display");
+
+        if (response.ok) {
+          historyDisplay.innerHTML = result;
+        } else {
+          historyDisplay.innerHTML = `<div class="alert">Error: ${result}</div>`;
+        }
+      }
+    </script>
+  </body>
+</html>

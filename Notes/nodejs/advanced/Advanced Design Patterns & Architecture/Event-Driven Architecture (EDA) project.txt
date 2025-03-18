@@ -1,0 +1,283 @@
+Here’s a **full professional Event-Driven Architecture (EDA) project in Node.js** using **Kafka** for microservices communication.  
+
+---
+
+## **📌 Project Overview**
+We’ll build an **eCommerce system** with the following microservices:
+1. **Order Service** → Publishes `orderPlaced` events.  
+2. **Payment Service** → Listens for `orderPlaced` events and processes payments.  
+3. **Notification Service** → Sends confirmation emails when an order is paid.  
+
+**Technology Stack:**
+- **Node.js (Express.js)**
+- **Kafka (KafkaJS)**
+- **Docker (for Kafka)**
+- **MongoDB (for persistence)**
+- **TypeScript (for type safety)**
+
+---
+
+## **📌 Step 1: Setup Kafka with Docker**
+Install **Kafka** using Docker:
+
+```sh
+docker-compose up -d
+```
+
+**`docker-compose.yml`**
+```yaml
+version: '3.7'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+```
+
+---
+
+## **📌 Step 2: Order Service (Producer)**
+This service **publishes events** when an order is placed.
+
+**📌 Install Dependencies:**
+```sh
+npm init -y
+npm install express kafkajs mongoose
+```
+
+**📌 `order-service/index.ts`**
+```typescript
+import express from "express";
+import { Kafka } from "kafkajs";
+import mongoose from "mongoose";
+
+// Initialize Express
+const app = express();
+app.use(express.json());
+
+// Kafka Configuration
+const kafka = new Kafka({ clientId: "order-service", brokers: ["localhost:9092"] });
+const producer = kafka.producer();
+
+// MongoDB Connection
+mongoose.connect("mongodb://localhost:27017/orders");
+
+const OrderSchema = new mongoose.Schema({
+  item: String,
+  price: Number,
+  status: { type: String, default: "PENDING" },
+});
+const Order = mongoose.model("Order", OrderSchema);
+
+// Place Order Route
+app.post("/order", async (req, res) => {
+  await producer.connect();
+  const { item, price } = req.body;
+
+  const order = await Order.create({ item, price });
+
+  await producer.send({
+    topic: "order-events",
+    messages: [{ key: order.id, value: JSON.stringify(order) }],
+  });
+
+  res.status(201).json({ message: "Order placed", order });
+});
+
+// Start Server
+app.listen(4000, () => console.log("Order Service running on port 4000"));
+```
+
+✅ **This service:**  
+- Stores the order in **MongoDB**  
+- **Publishes** the order event to **Kafka**  
+
+---
+
+## **📌 Step 3: Payment Service (Consumer)**
+This service **listens for order events** and processes payments.
+
+**📌 Install Dependencies:**
+```sh
+npm init -y
+npm install express kafkajs mongoose
+```
+
+**📌 `payment-service/index.ts`**
+```typescript
+import express from "express";
+import { Kafka } from "kafkajs";
+import mongoose from "mongoose";
+
+// Initialize Express
+const app = express();
+app.use(express.json());
+
+// Kafka Configuration
+const kafka = new Kafka({ clientId: "payment-service", brokers: ["localhost:9092"] });
+const consumer = kafka.consumer({ groupId: "payment-group" });
+
+// MongoDB Connection
+mongoose.connect("mongodb://localhost:27017/payments");
+
+const PaymentSchema = new mongoose.Schema({
+  orderId: String,
+  status: { type: String, default: "SUCCESS" },
+});
+const Payment = mongoose.model("Payment", PaymentSchema);
+
+// Process Payment Event
+const processPayment = async () => {
+  await consumer.connect();
+  await consumer.subscribe({ topic: "order-events", fromBeginning: true });
+
+  await consumer.run({
+    eachMessage: async ({ message }) => {
+      const order = JSON.parse(message.value.toString());
+      console.log(`Processing payment for order: ${order._id}`);
+
+      // Save payment info
+      await Payment.create({ orderId: order._id });
+
+      console.log(`Payment successful for order: ${order._id}`);
+    },
+  });
+};
+
+processPayment();
+
+// Start Server
+app.listen(5000, () => console.log("Payment Service running on port 5000"));
+```
+
+✅ **This service:**  
+- **Listens** for `order-events`  
+- Processes the payment and stores it in **MongoDB**  
+
+---
+
+## **📌 Step 4: Notification Service**
+This service **listens for payment events** and sends email notifications.
+
+**📌 Install Dependencies:**
+```sh
+npm init -y
+npm install express kafkajs nodemailer
+```
+
+**📌 `notification-service/index.ts`**
+```typescript
+import express from "express";
+import { Kafka } from "kafkajs";
+import nodemailer from "nodemailer";
+
+// Initialize Express
+const app = express();
+app.use(express.json());
+
+// Kafka Configuration
+const kafka = new Kafka({ clientId: "notification-service", brokers: ["localhost:9092"] });
+const consumer = kafka.consumer({ groupId: "notification-group" });
+
+// Email Configuration
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "your-email@gmail.com",
+    pass: "your-password",
+  },
+});
+
+// Send Email
+const sendEmail = async (orderId: string) => {
+  const mailOptions = {
+    from: "your-email@gmail.com",
+    to: "customer@example.com",
+    subject: "Order Confirmation",
+    text: `Your order with ID ${orderId} has been successfully processed.`,
+  };
+
+  await transporter.sendMail(mailOptions);
+  console.log(`Email sent for order: ${orderId}`);
+};
+
+// Listen for Payment Events
+const listenForPayments = async () => {
+  await consumer.connect();
+  await consumer.subscribe({ topic: "order-events", fromBeginning: true });
+
+  await consumer.run({
+    eachMessage: async ({ message }) => {
+      const order = JSON.parse(message.value.toString());
+      console.log(`Sending email for order: ${order._id}`);
+      await sendEmail(order._id);
+    },
+  });
+};
+
+listenForPayments();
+
+// Start Server
+app.listen(6000, () => console.log("Notification Service running on port 6000"));
+```
+
+✅ **This service:**  
+- **Listens** for `order-events`  
+- Sends a **confirmation email** using **Nodemailer**  
+
+---
+
+## **📌 Step 5: Run the Services**
+1. **Start Kafka & Zookeeper**  
+   ```sh
+   docker-compose up -d
+   ```
+2. **Run Order Service**
+   ```sh
+   cd order-service && node index.js
+   ```
+3. **Run Payment Service**
+   ```sh
+   cd payment-service && node index.js
+   ```
+4. **Run Notification Service**
+   ```sh
+   cd notification-service && node index.js
+   ```
+
+---
+
+## **📌 Step 6: Test the System**
+1. **Place an Order**  
+   ```sh
+   curl -X POST http://localhost:4000/order -H "Content-Type: application/json" -d '{"item": "Laptop", "price": 1200}'
+   ```
+2. **Check Payment Service Logs**  
+   ```sh
+   Processing payment for order: 101
+   Payment successful for order: 101
+   ```
+3. **Check Notification Service Logs**  
+   ```sh
+   Sending email for order: 101
+   Email sent for order: 101
+   ```
+
+---
+
+## **📌 Conclusion**
+🎯 **Event-Driven Architecture (EDA)** enables **loose coupling** and **scalability**  
+🚀 **Kafka** ensures **reliable communication** between microservices  
+🔗 **MongoDB** stores order and payment data  
+
+Would you like **unit testing (Jest, Supertest) or CI/CD integration** for this project? 🚀

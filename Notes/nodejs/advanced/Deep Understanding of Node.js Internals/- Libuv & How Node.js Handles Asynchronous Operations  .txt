@@ -1,0 +1,256 @@
+Libuv is a core part of Node.js that enables asynchronous, non-blocking I/O operations. It provides an **event loop**, a thread pool, and various **asynchronous I/O primitives** that allow Node.js to handle file systems, networking, DNS resolution, child processes, and more.  
+
+## **Key Concepts of Libuv in Node.js**
+1. **Event Loop** - The core mechanism that handles asynchronous operations.  
+2. **Thread Pool** - Used for CPU-intensive operations (e.g., file I/O, crypto, compression).  
+3. **Non-blocking I/O** - Efficient handling of I/O operations like network requests and file handling.  
+4. **Timers** - `setTimeout`, `setInterval`, and `setImmediate` execution order.  
+5. **Microtasks & Macrotasks** - The **callback queue** and **task scheduling** in Node.js.  
+6. **Async Hooks** - Tracing asynchronous operations.  
+
+---
+
+## **1. Understanding the Event Loop in Node.js**
+The event loop is what enables Node.js to be **asynchronous and non-blocking**.
+
+### **1.1. How Event Loop Works (Phases)**
+1. **Timers Phase** - Executes `setTimeout` and `setInterval` callbacks.  
+2. **I/O Callbacks Phase** - Executes deferred I/O callbacks.  
+3. **Idle, Prepare Phase** - Internal use (not commonly used).  
+4. **Poll Phase** - Retrieves new I/O events and executes them.  
+5. **Check Phase** - Executes `setImmediate` callbacks.  
+6. **Close Callbacks Phase** - Executes close event callbacks (e.g., `socket.on('close')`).  
+
+### **1.2. Example: Understanding Event Loop Execution Order**
+```js
+const fs = require('fs');
+
+console.log('Start');
+
+setTimeout(() => {
+  console.log('Timeout');
+}, 0);
+
+setImmediate(() => {
+  console.log('Immediate');
+});
+
+fs.readFile(__filename, () => {
+  console.log('File Read');
+  setTimeout(() => console.log('Timeout after File Read'), 0);
+  setImmediate(() => console.log('Immediate after File Read'));
+});
+
+console.log('End');
+```
+
+### **Expected Output**
+```
+Start
+End
+Immediate
+Timeout
+File Read
+Immediate after File Read
+Timeout after File Read
+```
+- `setImmediate` runs before `setTimeout(0)` after I/O.  
+- The event loop prioritizes I/O callbacks before timers.  
+
+---
+
+## **2. Thread Pool & Asynchronous Operations**
+### **2.1. When Node.js Uses Thread Pool**
+Node.js uses a thread pool (via `libuv`) when:
+1. Performing **file system operations** (`fs.readFile`, `fs.writeFile`).
+2. Using **crypto operations** (`crypto.pbkdf2`, `crypto.randomBytes`).
+3. Performing **DNS lookups** (`dns.lookup`).
+4. Running **worker threads** for CPU-intensive tasks.
+
+### **2.2. Example: Using the Thread Pool**
+```js
+const crypto = require('crypto');
+
+console.log('Start');
+
+crypto.pbkdf2('password', 'salt', 100000, 64, 'sha512', () => {
+  console.log('Crypto operation finished');
+});
+
+console.log('End');
+```
+Even though `crypto.pbkdf2` is async, it **uses a worker thread**, so it won't block the main thread.
+
+#### **Increasing the Thread Pool Size**
+By default, Node.js has **4 worker threads**. You can increase it using:
+```bash
+UV_THREADPOOL_SIZE=8 node server.js
+```
+
+---
+
+## **3. File System Operations (Asynchronous vs Synchronous)**
+Libuv allows both async (non-blocking) and sync (blocking) file operations.
+
+### **3.1. Non-Blocking File Read (Async)**
+```js
+const fs = require('fs');
+
+console.log('Reading File...');
+fs.readFile('test.txt', 'utf-8', (err, data) => {
+  if (err) throw err;
+  console.log('File Content:', data);
+});
+console.log('After File Read');
+```
+### **3.2. Blocking File Read (Sync)**
+```js
+console.log('Reading File...');
+const data = fs.readFileSync('test.txt', 'utf-8');
+console.log('File Content:', data);
+console.log('After File Read');
+```
+🔴 **Sync methods block execution, avoid them in production!**
+
+---
+
+## **4. Non-Blocking Network Operations**
+### **4.1. Using `net` Module (TCP Server & Client)**
+```js
+const net = require('net');
+
+const server = net.createServer((socket) => {
+  console.log('Client connected');
+  socket.write('Welcome to the server\n');
+  
+  socket.on('data', (data) => {
+    console.log('Client says:', data.toString());
+  });
+
+  socket.on('end', () => {
+    console.log('Client disconnected');
+  });
+});
+
+server.listen(8080, () => console.log('Server listening on port 8080'));
+```
+**Client:**
+```js
+const net = require('net');
+const client = net.createConnection({ port: 8080 }, () => {
+  console.log('Connected to server');
+  client.write('Hello, Server!');
+});
+client.on('data', (data) => {
+  console.log('Received:', data.toString());
+});
+```
+
+---
+
+## **5. Worker Threads for CPU-Intensive Tasks**
+For **CPU-heavy operations**, use **worker threads** instead of blocking the event loop.
+
+### **5.1. Example: Using Worker Threads**
+```js
+const { Worker, isMainThread, parentPort } = require('worker_threads');
+
+if (isMainThread) {
+  console.log('Main thread running');
+
+  const worker = new Worker(__filename);
+  worker.on('message', (msg) => console.log('Worker says:', msg));
+} else {
+  parentPort.postMessage('Hello from Worker');
+}
+```
+
+---
+
+## **6. Real-World Example: WebSockets with Real-Time Data**
+WebSockets provide real-time bidirectional communication.
+
+### **6.1. Server Implementation**
+```js
+const WebSocket = require('ws');
+
+const wss = new WebSocket.Server({ port: 3000 });
+
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+  ws.send('Hello from server');
+
+  ws.on('message', (message) => {
+    console.log('Received:', message);
+    ws.send(`You said: ${message}`);
+  });
+});
+```
+### **6.2. Frontend Client (HTML + JavaScript)**
+```html
+<!DOCTYPE html>
+<html>
+<body>
+  <script>
+    const ws = new WebSocket('ws://localhost:3000');
+    
+    ws.onopen = () => {
+      console.log('Connected to server');
+      ws.send('Hello Server');
+    };
+
+    ws.onmessage = (event) => {
+      console.log('Received:', event.data);
+    };
+  </script>
+</body>
+</html>
+```
+
+---
+
+## **7. Async Hooks: Tracing Asynchronous Operations**
+`async_hooks` module helps **track async operations** for debugging.
+
+```js
+const async_hooks = require('async_hooks');
+
+const hook = async_hooks.createHook({
+  init(id, type) { console.log(`Init: ${type} (${id})`); },
+  destroy(id) { console.log(`Destroy: ${id}`); }
+});
+hook.enable();
+
+setTimeout(() => console.log('Timeout finished'), 1000);
+```
+
+---
+
+## **8. Process & Performance Monitoring**
+### **8.1. Monitor Event Loop Performance**
+```js
+const { performance, PerformanceObserver } = require('perf_hooks');
+
+const obs = new PerformanceObserver((list) => {
+  console.log(list.getEntries()[0]);
+});
+obs.observe({ entryTypes: ['measure'] });
+
+performance.mark('start');
+setTimeout(() => {
+  performance.mark('end');
+  performance.measure('Time Taken', 'start', 'end');
+}, 1000);
+```
+
+---
+
+## **Conclusion**
+- **Libuv enables asynchronous I/O** in Node.js, handling **networking, file systems, and timers**.
+- **Event loop phases determine execution order** of tasks.
+- **Thread pool is used for CPU-heavy operations** (e.g., `crypto`, `fs`).
+- **Worker threads improve performance for CPU-bound tasks**.
+- **WebSockets allow real-time communication**.
+- **Async hooks help trace async operations**.
+
+This guide gives **all professional use cases** of **libuv and async handling in Node.js**. 🚀

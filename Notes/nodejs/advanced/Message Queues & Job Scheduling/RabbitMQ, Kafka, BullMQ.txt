@@ -1,0 +1,272 @@
+In a **Message Queue** and **Job Scheduling** system, the goal is to offload tasks asynchronously to workers, manage queues for those tasks, and ensure tasks are processed in order or based on priority. 
+
+We'll implement a **Message Queue** with **RabbitMQ** and handle **Job Scheduling** with **Bull** (a popular job queue library for Node.js).
+
+---
+
+## **📌 Project Overview:**
+We’ll build an asynchronous **Order Processing System**:
+1. **Order Service** → Places orders in a **queue** for processing.
+2. **Payment Service** → Processes orders from the queue.
+3. **Job Scheduler** → Schedules jobs to process orders after a delay.
+
+**Technology Stack:**
+- **Node.js (Express.js)**
+- **RabbitMQ (for message queueing)**
+- **Bull (for job scheduling)**
+- **MongoDB (for persistence)**
+- **TypeScript (for type safety)**
+
+---
+
+## **📌 Step 1: Setting up RabbitMQ**
+You’ll need to run **RabbitMQ** to enable message queueing.
+
+### **Install RabbitMQ using Docker**
+```sh
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+```
+RabbitMQ Management Console is accessible at `http://localhost:15672/` with default credentials:
+- **Username**: `guest`
+- **Password**: `guest`
+
+---
+
+## **📌 Step 2: Install Dependencies**
+
+```sh
+npm init -y
+npm install express amqplib bull mongoose
+```
+
+---
+
+## **📌 Step 3: Order Service (Producer)**
+
+This service will **place orders in the queue** for processing.
+
+**📌 `order-service/index.ts`**
+```typescript
+import express from "express";
+import { connect } from "amqplib";
+import mongoose from "mongoose";
+
+// Initialize Express
+const app = express();
+app.use(express.json());
+
+// RabbitMQ Configuration
+const RABBITMQ_URL = "amqp://localhost";
+
+// MongoDB Connection
+mongoose.connect("mongodb://localhost:27017/orders");
+
+const OrderSchema = new mongoose.Schema({
+  item: String,
+  price: Number,
+  status: { type: String, default: "PENDING" },
+});
+const Order = mongoose.model("Order", OrderSchema);
+
+// Create a connection to RabbitMQ
+const createRabbitMQConnection = async () => {
+  const conn = await connect(RABBITMQ_URL);
+  return conn.createChannel();
+};
+
+// Order route
+app.post("/order", async (req, res) => {
+  const { item, price } = req.body;
+  const order = await Order.create({ item, price });
+
+  // Send order message to RabbitMQ
+  const channel = await createRabbitMQConnection();
+  await channel.assertQueue("orderQueue", { durable: true });
+  channel.sendToQueue("orderQueue", Buffer.from(JSON.stringify(order)));
+
+  res.status(201).json({ message: "Order placed", order });
+});
+
+// Start server
+app.listen(4000, () => console.log("Order Service running on port 4000"));
+```
+
+✅ **This service:**  
+- Accepts a POST request to create an order.  
+- **Sends the order** to the `orderQueue` in **RabbitMQ**.  
+
+---
+
+## **📌 Step 4: Payment Service (Consumer)**
+
+This service will **consume orders from the queue** and process payments.
+
+**📌 `payment-service/index.ts`**
+```typescript
+import { connect } from "amqplib";
+import mongoose from "mongoose";
+
+// MongoDB Connection
+mongoose.connect("mongodb://localhost:27017/payments");
+
+const PaymentSchema = new mongoose.Schema({
+  orderId: String,
+  status: { type: String, default: "SUCCESS" },
+});
+const Payment = mongoose.model("Payment", PaymentSchema);
+
+// RabbitMQ Configuration
+const RABBITMQ_URL = "amqp://localhost";
+
+// Create a connection to RabbitMQ
+const createRabbitMQConnection = async () => {
+  const conn = await connect(RABBITMQ_URL);
+  return conn.createChannel();
+};
+
+// Process order
+const processOrder = async () => {
+  const channel = await createRabbitMQConnection();
+  await channel.assertQueue("orderQueue", { durable: true });
+
+  channel.consume("orderQueue", async (msg) => {
+    if (msg) {
+      const order = JSON.parse(msg.content.toString());
+      console.log(`Processing payment for order: ${order._id}`);
+
+      // Simulate payment processing
+      await Payment.create({ orderId: order._id });
+
+      console.log(`Payment processed for order: ${order._id}`);
+
+      // Acknowledge the message
+      channel.ack(msg);
+    }
+  });
+};
+
+processOrder();
+```
+
+✅ **This service:**  
+- **Consumes** orders from the **RabbitMQ queue**  
+- Processes **payments** and stores them in **MongoDB**  
+
+---
+
+## **📌 Step 5: Job Scheduling with Bull**
+
+We'll use **Bull** to schedule tasks, e.g., delay the payment processing after placing an order.
+
+**📌 Install Bull:**
+```sh
+npm install bull
+```
+
+**📌 `job-scheduler/index.ts`**
+```typescript
+import { Queue, Worker } from "bull";
+import mongoose from "mongoose";
+import { connect } from "amqplib";
+
+// MongoDB connection
+mongoose.connect("mongodb://localhost:27017/orders");
+
+const OrderSchema = new mongoose.Schema({
+  item: String,
+  price: Number,
+  status: { type: String, default: "PENDING" },
+});
+const Order = mongoose.model("Order", OrderSchema);
+
+// Create Bull queue
+const orderQueue = new Queue("orderQueue", {
+  redis: { host: "localhost", port: 6379 },
+});
+
+// Job scheduling worker
+const worker = new Worker("orderQueue", async (job) => {
+  const order = job.data;
+  console.log(`Processing scheduled payment for order: ${order._id}`);
+
+  // Simulate payment processing
+  await mongoose.connection.db.collection("payments").insertOne({
+    orderId: order._id,
+    status: "SUCCESS",
+  });
+
+  console.log(`Payment completed for order: ${order._id}`);
+});
+
+// Function to schedule payment job
+const scheduleJob = async (order: any, delay: number) => {
+  await orderQueue.add(order, { delay });
+};
+
+// Example usage: Delay payment for 5 seconds
+const delayPaymentProcessing = async () => {
+  const order = await Order.create({ item: "Laptop", price: 1200 });
+
+  // Schedule job to process payment after 5 seconds
+  scheduleJob(order, 5000);
+};
+
+delayPaymentProcessing();
+```
+
+✅ **This service:**  
+- **Schedules payment** processing jobs using **Bull**.  
+- Delays the job for a set time before processing it.  
+
+---
+
+## **📌 Step 6: Run the Services**
+
+1. **Start RabbitMQ**  
+   ```sh
+   docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:management
+   ```
+
+2. **Run the Order Service**  
+   ```sh
+   cd order-service && ts-node index.ts
+   ```
+
+3. **Run the Payment Service**  
+   ```sh
+   cd payment-service && ts-node index.ts
+   ```
+
+4. **Run the Job Scheduler**  
+   ```sh
+   cd job-scheduler && ts-node index.ts
+   ```
+
+---
+
+## **📌 Step 7: Test the System**
+
+1. **Place an Order**
+   ```sh
+   curl -X POST http://localhost:4000/order -H "Content-Type: application/json" -d '{"item": "Laptop", "price": 1200}'
+   ```
+2. **Check Payment Service Logs**  
+   ```sh
+   Processing payment for order: 101
+   Payment processed for order: 101
+   ```
+3. **Check Job Scheduler Logs**  
+   ```sh
+   Processing scheduled payment for order: 101
+   Payment completed for order: 101
+   ```
+
+---
+
+## **📌 Conclusion**
+This setup provides:
+- **RabbitMQ** for **message queueing** between services (Order & Payment).  
+- **Bull** for **job scheduling** (delayed payment processing).
+- **MongoDB** for storing order and payment data.  
+
+Would you like **unit testing**, **CI/CD integration**, or additional features (e.g., job retries, job prioritization)? 🚀

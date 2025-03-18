@@ -1,0 +1,155 @@
+Dependency Injection (DI) is a key design pattern in professional Node.js applications, especially for scalability and maintainability. Below is a structured approach to DI in Node.js, covering multiple use cases:
+
+---
+
+### **1. Basic Dependency Injection**
+Using constructor injection:
+
+```javascript
+class Logger {
+  log(message) {
+    console.log(`[LOG]: ${message}`);
+  }
+}
+
+class UserService {
+  constructor(logger) {
+    this.logger = logger;
+  }
+
+  createUser(name) {
+    this.logger.log(`User ${name} created.`);
+  }
+}
+
+const logger = new Logger();
+const userService = new UserService(logger);
+userService.createUser("John Doe");
+```
+
+---
+
+### **2. Using a DI Container (e.g., InversifyJS)**
+InversifyJS is a powerful DI container for Node.js applications.
+
+**Step 1: Install**
+```sh
+npm install inversify reflect-metadata
+```
+
+**Step 2: Define Interfaces**
+```typescript
+import "reflect-metadata";
+import { injectable, inject, Container } from "inversify";
+
+interface ILogger {
+  log(message: string): void;
+}
+```
+
+**Step 3: Implement Services**
+```typescript
+@injectable()
+class Logger implements ILogger {
+  log(message: string) {
+    console.log(`[LOG]: ${message}`);
+  }
+}
+
+@injectable()
+class UserService {
+  private logger: ILogger;
+
+  constructor(@inject("ILogger") logger: ILogger) {
+    this.logger = logger;
+  }
+
+  createUser(name: string) {
+    this.logger.log(`User ${name} created.`);
+  }
+}
+```
+
+**Step 4: Configure the DI Container**
+```typescript
+const container = new Container();
+container.bind<ILogger>("ILogger").to(Logger);
+container.bind<UserService>(UserService).toSelf();
+
+const userService = container.get(UserService);
+userService.createUser("John Doe");
+```
+
+---
+
+### **3. DI in Express.js**
+```javascript
+const express = require("express");
+
+class Logger {
+  log(message) {
+    console.log(`[LOG]: ${message}`);
+  }
+}
+
+class UserService {
+  constructor(logger) {
+    this.logger = logger;
+  }
+
+  getUser() {
+    this.logger.log("Fetching user data...");
+    return { name: "John Doe" };
+  }
+}
+
+const logger = new Logger();
+const userService = new UserService(logger);
+
+const app = express();
+app.get("/user", (req, res) => {
+  res.json(userService.getUser());
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
+```
+
+---
+
+### **4. DI with TypeORM in a Real Project**
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, Repository } from "typeorm";
+import { injectable } from "inversify";
+import { DataSource } from "typeorm";
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+}
+
+@injectable()
+class UserRepository {
+  constructor(private readonly db: DataSource) {}
+
+  getUserRepo(): Repository<User> {
+    return this.db.getRepository(User);
+  }
+
+  async createUser(name: string) {
+    const userRepo = this.getUserRepo();
+    const user = userRepo.create({ name });
+    await userRepo.save(user);
+  }
+}
+```
+
+---
+
+### **5. Implementing DI in an eCommerce System**
+You can create services like `ProductService`, `OrderService`, and `PaymentService` using DI.
+
+Would you like a more detailed eCommerce DI example?

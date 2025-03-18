@@ -1,0 +1,315 @@
+Here’s a professional-level implementation of **Factory Pattern** and **Singleton Pattern** in Node.js, covering multiple use cases.
+
+---
+
+## **1. Factory Pattern**
+The **Factory Pattern** provides a way to create objects without specifying their exact class, making the code more flexible.
+
+### **Example 1: Factory for Database Connections**
+```javascript
+class MySQLDatabase {
+  connect() {
+    console.log("Connected to MySQL Database");
+  }
+}
+
+class PostgreSQLDatabase {
+  connect() {
+    console.log("Connected to PostgreSQL Database");
+  }
+}
+
+class DatabaseFactory {
+  static createDatabase(type) {
+    switch (type) {
+      case "mysql":
+        return new MySQLDatabase();
+      case "postgres":
+        return new PostgreSQLDatabase();
+      default:
+        throw new Error("Unsupported database type");
+    }
+  }
+}
+
+// Usage
+const db = DatabaseFactory.createDatabase("mysql");
+db.connect();
+```
+
+---
+
+### **Example 2: Factory for Logging Service**
+```javascript
+class ConsoleLogger {
+  log(message) {
+    console.log(`[Console Logger]: ${message}`);
+  }
+}
+
+class FileLogger {
+  log(message) {
+    console.log(`[File Logger]: Writing to file -> ${message}`);
+  }
+}
+
+class LoggerFactory {
+  static createLogger(type) {
+    if (type === "console") return new ConsoleLogger();
+    if (type === "file") return new FileLogger();
+    throw new Error("Invalid logger type");
+  }
+}
+
+// Usage
+const logger = LoggerFactory.createLogger("file");
+logger.log("This is a log message.");
+```
+
+---
+
+## **2. Singleton Pattern**
+The **Singleton Pattern** ensures that a class has only one instance throughout the application.
+
+### **Example 1: Singleton for Database Connection**
+```javascript
+class Database {
+  constructor() {
+    if (!Database.instance) {
+      this.connection = this.connect();
+      Database.instance = this;
+    }
+    return Database.instance;
+  }
+
+  connect() {
+    console.log("New Database Connection Established");
+    return {}; // Simulating a connection object
+  }
+
+  query(sql) {
+    console.log(`Executing query: ${sql}`);
+  }
+}
+
+// Usage
+const db1 = new Database();
+db1.query("SELECT * FROM users");
+
+const db2 = new Database();
+db2.query("SELECT * FROM orders");
+
+console.log(db1 === db2); // true (same instance)
+```
+
+---
+
+### **Example 2: Singleton for Configuration Management**
+```javascript
+class Config {
+  constructor() {
+    if (!Config.instance) {
+      this.settings = { appName: "MyApp", port: 3000 };
+      Config.instance = this;
+    }
+    return Config.instance;
+  }
+
+  get(key) {
+    return this.settings[key];
+  }
+}
+
+// Usage
+const config1 = new Config();
+console.log(config1.get("appName")); // "MyApp"
+
+const config2 = new Config();
+console.log(config2.get("port")); // 3000
+
+console.log(config1 === config2); // true (same instance)
+```
+
+---
+
+
+
+
+
+
+
+Here’s a **professional-level** implementation of the **Factory Pattern** and **Singleton Pattern** in a **Node.js eCommerce system** using **TypeScript**, **TypeORM**, and **Express.js**.
+
+---
+
+# **1. Singleton Pattern in an eCommerce System**
+### **Use Case: Database Connection**
+A **Singleton** ensures that the database connection remains **consistent** across all services in an eCommerce system.
+
+### **Implementation**
+```typescript
+import { DataSource } from "typeorm";
+
+export class Database {
+  private static instance: DataSource;
+
+  private constructor() {}
+
+  public static getInstance(): DataSource {
+    if (!Database.instance) {
+      Database.instance = new DataSource({
+        type: "mysql",
+        host: "localhost",
+        port: 3306,
+        username: "root",
+        password: "password",
+        database: "ecommerce",
+        entities: ["src/entities/*.ts"],
+        synchronize: true,
+      });
+      Database.instance.initialize()
+        .then(() => console.log("Database connected"))
+        .catch((err) => console.error("Database connection error:", err));
+    }
+    return Database.instance;
+  }
+}
+
+// Usage in a repository
+import { Repository } from "typeorm";
+import { Product } from "./entities/Product";
+
+export class ProductRepository {
+  private db = Database.getInstance();
+  private productRepo: Repository<Product>;
+
+  constructor() {
+    this.productRepo = this.db.getRepository(Product);
+  }
+
+  async getAllProducts() {
+    return this.productRepo.find();
+  }
+}
+```
+
+✅ **Ensures only one database connection instance is created across the entire application.**
+
+---
+
+# **2. Factory Pattern in an eCommerce System**
+### **Use Case: Payment Gateway Integration**
+A **Factory Pattern** is useful for integrating multiple payment providers like **Stripe, PayPal, and Razorpay** without tightly coupling them.
+
+### **Implementation**
+```typescript
+interface PaymentGateway {
+  processPayment(amount: number): void;
+}
+
+class StripePayment implements PaymentGateway {
+  processPayment(amount: number) {
+    console.log(`Processing $${amount} via Stripe`);
+  }
+}
+
+class PayPalPayment implements PaymentGateway {
+  processPayment(amount: number) {
+    console.log(`Processing $${amount} via PayPal`);
+  }
+}
+
+class PaymentFactory {
+  static createPaymentGateway(type: string): PaymentGateway {
+    switch (type) {
+      case "stripe":
+        return new StripePayment();
+      case "paypal":
+        return new PayPalPayment();
+      default:
+        throw new Error("Unsupported payment gateway");
+    }
+  }
+}
+
+// Usage in OrderService
+class OrderService {
+  placeOrder(amount: number, paymentType: string) {
+    const paymentGateway = PaymentFactory.createPaymentGateway(paymentType);
+    paymentGateway.processPayment(amount);
+  }
+}
+
+// Testing the order placement
+const orderService = new OrderService();
+orderService.placeOrder(100, "stripe"); // Processing $100 via Stripe
+orderService.placeOrder(200, "paypal"); // Processing $200 via PayPal
+```
+
+✅ **Allows adding new payment gateways easily without modifying existing code.**
+
+---
+
+# **3. Combining Singleton & Factory Patterns**
+### **Use Case: Creating Order with Singleton Database and Factory-based Payment Processing**
+```typescript
+import { Entity, PrimaryGeneratedColumn, Column, Repository } from "typeorm";
+
+@Entity()
+export class Order {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  amount: number;
+
+  @Column()
+  paymentMethod: string;
+}
+
+// Order Repository
+class OrderRepository {
+  private db = Database.getInstance();
+  private orderRepo: Repository<Order>;
+
+  constructor() {
+    this.orderRepo = this.db.getRepository(Order);
+  }
+
+  async createOrder(amount: number, paymentMethod: string) {
+    const order = this.orderRepo.create({ amount, paymentMethod });
+    return this.orderRepo.save(order);
+  }
+}
+
+// Using Singleton & Factory in Order Service
+class OrderService {
+  private orderRepo = new OrderRepository();
+
+  async placeOrder(amount: number, paymentType: string) {
+    const paymentGateway = PaymentFactory.createPaymentGateway(paymentType);
+    paymentGateway.processPayment(amount);
+    return this.orderRepo.createOrder(amount, paymentType);
+  }
+}
+
+// Executing an Order Placement
+(async () => {
+  const orderService = new OrderService();
+  await orderService.placeOrder(150, "stripe"); // Processing $150 via Stripe
+})();
+```
+
+✅ **Decoupled architecture with scalable payment integration & centralized database connection.**
+
+---
+
+## **Conclusion**
+This **eCommerce system** successfully integrates:
+- **Singleton Pattern** for centralized **database management**.
+- **Factory Pattern** for dynamic **payment gateway selection**.
+
+
+
+
+

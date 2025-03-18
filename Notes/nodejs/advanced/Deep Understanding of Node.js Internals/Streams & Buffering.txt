@@ -1,0 +1,243 @@
+### **Streams & Buffering in Node.js (Professional-Level Guide)**  
+**Streams** in Node.js allow reading and writing data in chunks, rather than loading the entire data into memory. This makes streams highly efficient for handling large files, network operations, and real-time data processing.  
+
+#### **Types of Streams in Node.js**  
+1. **Readable Streams** → Read data from a source (e.g., files, HTTP requests).  
+2. **Writable Streams** → Write data to a destination (e.g., files, HTTP responses).  
+3. **Duplex Streams** → Both readable and writable (e.g., TCP sockets).  
+4. **Transform Streams** → Modify or process data while streaming (e.g., compression, encryption).  
+
+---
+
+## **1. Using Readable and Writable Streams**
+### **1.1. Reading a File Using Streams (Efficient Memory Usage)**
+```js
+const fs = require('fs');
+
+const readableStream = fs.createReadStream('largeFile.txt', { encoding: 'utf8' });
+
+readableStream.on('data', (chunk) => {
+  console.log('Received chunk:', chunk);
+});
+
+readableStream.on('end', () => {
+  console.log('Finished reading file');
+});
+
+readableStream.on('error', (err) => {
+  console.error('Error:', err);
+});
+```
+✅ **Why use streams?** Unlike `fs.readFile()`, this approach doesn't load the entire file into memory.
+
+---
+
+### **1.2. Writing to a File Using Streams**
+```js
+const writableStream = fs.createWriteStream('output.txt');
+
+writableStream.write('Hello, this is a stream write.\n');
+writableStream.write('Writing another line.\n');
+
+writableStream.end();  // Ends the stream
+writableStream.on('finish', () => console.log('Finished writing to file'));
+```
+✅ **Why use streams?** Unlike `fs.writeFile()`, this approach allows handling large data without blocking the event loop.
+
+---
+
+## **2. Piping Streams (Efficient Data Flow)**
+Streams can be **piped** to directly transfer data from a source to a destination without buffering.
+
+### **2.1. Copying a Large File (Without High Memory Usage)**
+```js
+const fs = require('fs');
+
+const readableStream = fs.createReadStream('bigFile.txt');
+const writableStream = fs.createWriteStream('copy.txt');
+
+readableStream.pipe(writableStream);
+
+writableStream.on('finish', () => console.log('File copied successfully'));
+```
+✅ **Why use `pipe()`?** This is the most memory-efficient way to handle file transfers.
+
+---
+
+## **3. Duplex & Transform Streams**
+Duplex and Transform streams are useful when we need to process data while reading and writing.
+
+### **3.1. Creating a Duplex Stream (TCP Server)**
+```js
+const net = require('net');
+
+const server = net.createServer((socket) => {
+  socket.on('data', (data) => {
+    console.log('Received:', data.toString());
+    socket.write(`Echo: ${data}`);
+  });
+});
+
+server.listen(3000, () => console.log('TCP Server listening on port 3000'));
+```
+✅ **Why use Duplex streams?** This is useful for bidirectional communication like chat applications.
+
+---
+
+### **3.2. Creating a Transform Stream (Uppercase Conversion)**
+```js
+const { Transform } = require('stream');
+
+const upperCaseTransform = new Transform({
+  transform(chunk, encoding, callback) {
+    this.push(chunk.toString().toUpperCase());
+    callback();
+  }
+});
+
+process.stdin.pipe(upperCaseTransform).pipe(process.stdout);
+```
+✅ **Why use Transform streams?** This approach efficiently processes data in chunks without blocking.
+
+---
+
+## **4. Streaming HTTP Requests & Responses**
+### **4.1. Streaming an HTTP Response (Sending Large Files)**
+```js
+const http = require('http');
+const fs = require('fs');
+
+http.createServer((req, res) => {
+  const stream = fs.createReadStream('largeFile.txt');
+  stream.pipe(res);
+}).listen(8080, () => console.log('Server listening on port 8080'));
+```
+✅ **Why use this approach?** It prevents high memory usage when serving large files.
+
+---
+
+### **4.2. Streaming an HTTP Request (Sending Data to a Server)**
+```js
+const http = require('http');
+const fs = require('fs');
+
+const options = {
+  hostname: 'localhost',
+  port: 8080,
+  method: 'POST',
+  headers: {
+    'Content-Type': 'text/plain'
+  }
+};
+
+const req = http.request(options, (res) => {
+  res.on('data', (chunk) => console.log('Response:', chunk.toString()));
+});
+
+const fileStream = fs.createReadStream('largeFile.txt');
+fileStream.pipe(req);
+```
+✅ **Why use this approach?** It efficiently uploads files without loading them into memory.
+
+---
+
+## **5. Using Buffers for Low-Level Data Manipulation**
+Buffers provide **direct access to memory** and are used when dealing with **binary data**.
+
+### **5.1. Creating and Manipulating Buffers**
+```js
+const buf = Buffer.alloc(10);  // Allocates 10 bytes
+buf.write('Hello');
+
+console.log(buf.toString());   // Output: Hello
+console.log(buf.length);       // Output: 10
+```
+✅ **Why use Buffers?** Buffers are essential for handling raw binary data, such as image processing and file handling.
+
+---
+
+### **5.2. Reading a File into a Buffer**
+```js
+const fs = require('fs');
+
+fs.readFile('image.png', (err, data) => {
+  if (err) throw err;
+  console.log('Buffer:', data);
+});
+```
+✅ **Why use Buffers here?** Binary files like images and videos require buffers for proper processing.
+
+---
+
+## **6. Real-World Example: Streaming File Compression**
+### **6.1. Compressing a File Using Streams**
+```js
+const fs = require('fs');
+const zlib = require('zlib');
+
+const readableStream = fs.createReadStream('bigFile.txt');
+const writableStream = fs.createWriteStream('bigFile.txt.gz');
+const gzipStream = zlib.createGzip();
+
+readableStream.pipe(gzipStream).pipe(writableStream);
+
+writableStream.on('finish', () => console.log('File compressed successfully'));
+```
+✅ **Why use this?** This prevents loading the entire file into memory.
+
+---
+
+### **6.2. Decompressing a File Using Streams**
+```js
+const fs = require('fs');
+const zlib = require('zlib');
+
+const readableStream = fs.createReadStream('bigFile.txt.gz');
+const writableStream = fs.createWriteStream('bigFile-decompressed.txt');
+const gunzipStream = zlib.createGunzip();
+
+readableStream.pipe(gunzipStream).pipe(writableStream);
+
+writableStream.on('finish', () => console.log('File decompressed successfully'));
+```
+✅ **Why use this?** Handles large files without excessive memory usage.
+
+---
+
+## **7. Advanced: Custom Stream Handling**
+```js
+const { Readable } = require('stream');
+
+class CustomStream extends Readable {
+  constructor(data) {
+    super();
+    this.data = data;
+  }
+  _read() {
+    if (this.data.length === 0) this.push(null);
+    else this.push(this.data.shift());
+  }
+}
+
+const stream = new CustomStream(['Hello\n', 'World\n']);
+stream.pipe(process.stdout);
+```
+✅ **Why use Custom Streams?** Custom streams allow more control over data flow.
+
+---
+
+## **Conclusion**
+| Feature                 | Key Benefit |
+|-------------------------|-------------|
+| **Readable Streams**    | Efficient file/network reading |
+| **Writable Streams**    | Memory-efficient file writing |
+| **Piping Streams**      | Direct data transfer without buffering |
+| **Duplex Streams**      | Bidirectional communication (e.g., TCP) |
+| **Transform Streams**   | Data transformation (e.g., compression, encryption) |
+| **HTTP Streaming**      | Efficient API responses |
+| **Buffers**             | Handle binary data efficiently |
+| **Compression**         | Reduce file sizes efficiently |
+
+**🚀 Professional Tip:** Use **streams and buffers** to build **scalable**, **high-performance applications** in Node.js.
+
+Would you like a **complete professional project** using Streams & Buffers? 🔥

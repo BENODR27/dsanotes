@@ -1,0 +1,148 @@
+Here are two separate professional examples:  
+
+1️⃣ **Event Loop Demonstration** – Explains how the event loop works step by step.  
+2️⃣ **Asynchronous Programming** – Uses async patterns (`callbacks`, `promises`, `async/await`) in a real-world API simulation.  
+
+---
+
+## **1️⃣ Event Loop in Node.js (Step-by-Step Execution)**
+This code demonstrates **each phase of the Event Loop**:  
+- Timers (`setTimeout`)  
+- I/O (`fs.readFile`)  
+- Check phase (`setImmediate`)  
+- Microtask queue (`process.nextTick` and `Promise.resolve()`)  
+
+```javascript
+const fs = require("fs");
+
+console.log("🟢 Script Start");
+
+// Microtask Queue (Executes before next event loop tick)
+process.nextTick(() => console.log("🟡 process.nextTick() executed"));
+
+// Promise (Microtask, runs after process.nextTick)
+Promise.resolve().then(() => console.log("🔵 Promise resolved"));
+
+// Timers Phase
+setTimeout(() => console.log("🕒 setTimeout() executed"), 0);
+
+// I/O Phase (Executes after polling I/O events)
+fs.readFile(__filename, "utf8", () => {
+  console.log("📄 fs.readFile() callback executed");
+});
+
+// Check Phase (Executes after I/O)
+setImmediate(() => console.log("⚡ setImmediate() executed"));
+
+console.log("🟢 Script End");
+```
+
+### **Expected Output (Execution Order)**
+```
+🟢 Script Start
+🟢 Script End
+🟡 process.nextTick() executed
+🔵 Promise resolved
+🕒 setTimeout() executed
+📄 fs.readFile() callback executed
+⚡ setImmediate() executed
+```
+
+### **Explanation**
+1. **Synchronous code executes first** (`console.log("Script Start")` and `console.log("Script End")`).  
+2. **Microtask Queue (Highest Priority)**
+   - `process.nextTick()` runs **before** the next event loop iteration.
+   - `Promise.resolve().then(...)` executes after `process.nextTick()`.
+3. **Timers Phase (`setTimeout()`)** executes next.  
+4. **I/O Phase (`fs.readFile() callback`)** runs when file reading is complete.  
+5. **Check Phase (`setImmediate()`)** runs **after the I/O phase**.  
+
+---
+
+## **2️⃣ Asynchronous Programming in Node.js**
+This example demonstrates **callback-based, promise-based, and async/await** approaches in a real-world API scenario.  
+
+#### **📌 Scenario:** Fetching user data from a file asynchronously and simulating an API call.  
+
+```javascript
+const fs = require("fs");
+const util = require("util");
+
+// Promisify fs.readFile for promise-based reading
+const readFileAsync = util.promisify(fs.readFile);
+
+console.log("🟢 Starting API Simulation");
+
+// Callback-based approach
+function fetchUserDataCallback(callback) {
+  fs.readFile("user.json", "utf8", (err, data) => {
+    if (err) return callback(err);
+    callback(null, JSON.parse(data));
+  });
+}
+
+// Promise-based approach
+function fetchUserDataPromise() {
+  return readFileAsync("user.json", "utf8").then(JSON.parse);
+}
+
+// Async/Await approach
+async function fetchUserDataAsync() {
+  try {
+    const data = await readFileAsync("user.json", "utf8");
+    return JSON.parse(data);
+  } catch (error) {
+    throw new Error("Failed to read user data");
+  }
+}
+
+// Using the callback function
+fetchUserDataCallback((err, user) => {
+  if (err) return console.error("❌ Callback Error:", err.message);
+  console.log("📄 Callback User Data:", user);
+});
+
+// Using Promises
+fetchUserDataPromise()
+  .then((user) => console.log("🔵 Promise User Data:", user))
+  .catch((err) => console.error("❌ Promise Error:", err.message));
+
+// Using Async/Await
+(async () => {
+  try {
+    const user = await fetchUserDataAsync();
+    console.log("⚡ Async/Await User Data:", user);
+  } catch (err) {
+    console.error("❌ Async/Await Error:", err.message);
+  }
+})();
+
+console.log("🟢 API Simulation Running...");
+```
+
+---
+
+### **Expected Output**
+```
+🟢 Starting API Simulation
+🟢 API Simulation Running...
+📄 Callback User Data: { "name": "John", "age": 30 }
+🔵 Promise User Data: { "name": "John", "age": 30 }
+⚡ Async/Await User Data: { "name": "John", "age": 30 }
+```
+
+---
+
+### **Explanation**
+1. **Callback-based approach:** Uses a traditional Node.js-style callback.  
+2. **Promise-based approach:** Uses `fs.promises` to handle async operations cleanly.  
+3. **Async/Await approach:** Uses modern syntax to simplify promise handling.  
+
+---
+
+### **Final Takeaways**
+🔹 **Event Loop controls execution order** of timers, I/O, and microtasks.  
+🔹 **Microtasks (Promises, `process.nextTick`) execute before the next loop iteration.**  
+🔹 **Asynchronous programming helps handle I/O operations efficiently** without blocking execution.  
+
+Would you like me to extend this with an **API server using Express** for real-world async handling? 🚀

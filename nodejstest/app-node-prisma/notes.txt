@@ -1,0 +1,23 @@
+npm init -y
+npm install express prisma @prisma/client pg dotenv zod
+npm install -D nodemon
+
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js"
+}
+
+--to initiate-prisma
+npx prisma init 
+
+-----to migrate---------------
+npx prisma migrate dev --name init
+
+
+
+npx prisma generate
+
+
+npm start
+
+

@@ -2,11 +2,6 @@ npm init -y
 npm install express prisma @prisma/client pg dotenv zod
 npm install -D nodemon
 
-"scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js"
-}
-
 --to initiate-prisma
 npx prisma init 
 
@@ -16,6 +11,13 @@ npx prisma migrate dev --name init
 
 
 npx prisma generate
+
+npx prisma generate?
+When	Why
+After updating schema.prisma	So changes are reflected in the generated client
+After changing the database model	New fields, models, relations get included
+After running prisma migrate	To update the client to match DB schema
+After installing Prisma in a new project	To create the first client
 
 
 npm start

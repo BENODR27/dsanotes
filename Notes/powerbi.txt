@@ -1,0 +1,125 @@
+Here’s a **complete roadmap to master Power BI as a professional**, step-by-step — from beginner to job-ready expert:
+
+---
+
+## 🚀 Phase 1: **Beginner – Get Comfortable with the Basics**
+
+### 🎯 Goals:
+- Understand what Power BI is
+- Learn basic components
+- Connect and transform simple datasets
+
+### ✅ Topics:
+- What is Power BI? (Desktop, Service, Mobile)
+- Power BI Interface Overview
+- Connecting to Excel, CSV, and databases
+- Basic Data Transformations with **Power Query**
+- Creating simple visualizations (bar, line, pie charts)
+- Publishing reports to Power BI Service
+
+### 📚 Resources:
+- Microsoft Learn Power BI beginner module
+- YouTube: Guy in a Cube, Leila Gharani
+
+---
+
+## 🧠 Phase 2: **Intermediate – Build Real Reports**
+
+### 🎯 Goals:
+- Learn how to model data properly
+- Create calculated columns, measures, KPIs
+- Build dashboards for storytelling
+
+### ✅ Topics:
+- Data Modeling (Star Schema, Relationships)
+- Introduction to **DAX (Data Analysis Expressions)**
+- Creating Measures vs. Calculated Columns
+- Time Intelligence (YTD, QoQ, MoM, etc.)
+- Interactive Dashboards & Bookmarks
+- Drillthrough, Filters, Slicers
+
+### 📚 Practice Ideas:
+- Sales Dashboard
+- HR Analytics Report
+- Financial Overview
+
+---
+
+## 🔥 Phase 3: **Advanced – Master DAX, Optimization, and Interactivity**
+
+### 🎯 Goals:
+- Deep dive into DAX
+- Optimize large datasets
+- Master interactivity & performance
+
+### ✅ Topics:
+- Advanced DAX (Variables, Context, Iterator functions like SUMX, FILTER)
+- Performance Optimization (Data model best practices, Manage relationships)
+- Using Parameters & What-if Analysis
+- Paginated Reports
+- Tooltips, Custom visuals, Sync slicers
+
+### 🛠 Tools to Learn:
+- Performance Analyzer
+- DAX Studio
+- Tabular Editor
+
+---
+
+## 🌐 Phase 4: **Deployment & Sharing**
+
+### 🎯 Goals:
+- Publish and manage reports in Power BI Service
+- Set up data refresh and security
+
+### ✅ Topics:
+- Power BI Service workspace and apps
+- Row-Level Security (RLS)
+- Scheduled Data Refresh
+- Sharing Dashboards & Reports
+- Usage Metrics & Alerts
+
+---
+
+## 🧩 Phase 5: **Integration & Automation**
+
+### 🎯 Goals:
+- Connect Power BI with other tools
+- Automate workflows
+
+### ✅ Topics:
+- Power BI + Power Automate
+- Embedding Power BI in applications (Power BI Embedded)
+- Power BI REST API
+- Excel + Power BI integration
+- Custom Visuals with R or Python
+
+---
+
+## 💼 Phase 6: **Professional Practice & Portfolio**
+
+### 🎯 Goals:
+- Create real-world projects
+- Prepare for job interviews or freelance
+
+### ✅ Build a Portfolio:
+- Project 1: Sales Forecasting Dashboard
+- Project 2: Customer Segmentation with DAX
+- Project 3: Real-time Dashboard with Streaming Data
+
+### 📝 Certifications (Optional but useful):
+- **PL-300: Microsoft Power BI Data Analyst**
+- Microsoft Certified: Data Analyst Associate
+
+---
+
+## 📌 Tips to Master Power BI:
+
+- 💡 Practice daily — use open datasets (Kaggle, data.gov)
+- 🔁 Rebuild reports from the Power BI Community Gallery
+- 🧑‍🤝‍🧑 Join Power BI Community & LinkedIn groups
+- 🧪 Try Power BI Challenges on platforms like Maven Analytics
+
+---
+
+Would you like a **Notion template**, **PDF planner**, or a **YouTube script** to go with this roadmap?

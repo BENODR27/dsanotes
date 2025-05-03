@@ -156,6 +156,26 @@ engine.eval("print('Hello from JS')");
 
 Used in CMS systems or rule engines needing dynamic scripting (now replaced by GraalVM in modern setups).
 
+```java
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Value;
+
+public class GraalVMExample {
+    public static void main(String[] args) {
+        // Create a GraalVM context for JavaScript
+        try (Context context = Context.create("js")) {
+            // JavaScript code to execute
+            String script = "const greeting = 'Hello from GraalVM!'; greeting.toUpperCase();";
+
+            // Evaluate the JavaScript code
+            Value result = context.eval("js", script);
+
+            // Print the result
+            System.out.println(result.asString()); // Output: HELLO FROM GRAALVM!
+        }
+    }
+}
+```
 ---
 
 ### 8. **Parallel Arrays with `parallelSort()`**
@@ -216,11 +236,323 @@ _(Already Covered Above)_
 
 ### 2. **Functional Interfaces & `@FunctionalInterface` Annotation**
 
+#### 🔹 What is a Functional Interface?
+
+A **functional interface** is an interface that contains exactly one abstract method. It can have any number of default or static methods but must have only one abstract method to qualify as a functional interface. Functional interfaces are the foundation of **lambda expressions** in Java.
+
+#### 🔹 Key Characteristics:
+
+- Contains exactly **one abstract method**.
+- Can include **default** and **static methods**.
+- Automatically treated as a functional interface if it meets the criteria, but you can explicitly annotate it with `@FunctionalInterface`.
+
+#### 🔹 `@FunctionalInterface` Annotation:
+
+The `@FunctionalInterface` annotation is used to indicate that an interface is intended to be a functional interface. It ensures that the interface adheres to the functional interface contract during compile time.
+
+#### 🔹 Code Example:
+
+```java
+@FunctionalInterface
+interface GreetingService {
+    void greet(String message);
+
+    // Default method
+    default void sayHello() {
+        System.out.println("Hello!");
+    }
+
+    // Static method
+    static void sayGoodbye() {
+        System.out.println("Goodbye!");
+    }
+}
+
+public class FunctionalInterfaceExample {
+    public static void main(String[] args) {
+        GreetingService service = message -> System.out.println("Greeting: " + message);
+        service.greet("Welcome to Java 8!");
+        service.sayHello();
+        GreetingService.sayGoodbye();
+    }
+}
+```
+
+#### 🔹 Use Case:
+
+Functional interfaces are widely used in:
+
+- **Lambda expressions**: Simplify the implementation of single-method interfaces.
+- **Stream API**: Functional interfaces like `Predicate`, `Function`, `Consumer`, and `Supplier` are used extensively.
+- **Event handling**: Replace anonymous inner classes with concise lambda expressions.
+
+#### 🔹 Common Functional Interfaces in `java.util.function` Package:
+
+| Interface       | Abstract Method Signature          | Description                                      |
+|------------------|------------------------------------|--------------------------------------------------|
+| `Predicate<T>`   | `boolean test(T t)`               | Represents a condition (e.g., filtering).       |
+| `Function<T,R>`  | `R apply(T t)`                    | Transforms input of type `T` to output of type `R`. |
+| `Consumer<T>`    | `void accept(T t)`                | Performs an action on the given input.          |
+| `Supplier<T>`    | `T get()`                         | Supplies a value without taking any input.      |
+| `BiFunction<T,U,R>` | `R apply(T t, U u)`            | Takes two inputs and produces a result.         |
+
+Functional interfaces enable **functional programming** in Java, making code more concise, readable, and expressive.
+
 _(Already Covered Above)_
 
 ---
 
 ### 3. **Streams API**
+
+#### 🔹 What is Streams?
+
+Streams in Java 8 are a new abstraction introduced to process sequences of elements in a functional style. They allow you to perform operations such as filtering, mapping, and reducing on collections or arrays in a declarative and concise manner. Streams are not data structures but pipelines of computations that operate on data.
+
+#### 🔹 Key Characteristics:
+
+- **Lazy Evaluation**: Operations on streams are not executed until a terminal operation is invoked.
+- **Functional Programming**: Supports functional-style operations like `map`, `filter`, and `reduce`.
+- **Parallel Processing**: Streams can be processed in parallel to leverage multi-core processors.
+- **Immutable**: Streams do not modify the underlying data source.
+
+#### 🔹 Use Case:
+
+Functional-style operations for data processing pipelines: filtering, mapping, reducing.
+
+#### 🔹 Code Example:
+
+```java
+List<String> names = Arrays.asList("Tom", "Bob", "Alice");
+List<String> filtered = names.stream()
+    .filter(name -> name.startsWith("A"))
+    .map(String::toUpperCase)
+    .collect(Collectors.toList());
+System.out.println(filtered); // Output: [ALICE]
+```
+
+#### 🔹 Professional Usage:
+
+### Streams in Enterprise Applications with Examples
+
+Streams are widely used in enterprise applications for:
+
+- **Data Transformation and Mapping**: Transforming data from one form to another using operations like `map()` and `flatMap()`.  
+    **Example**:
+    ```java
+    List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+    List<Integer> nameLengths = names.stream()
+            .map(String::length)
+            .collect(Collectors.toList());
+    System.out.println(nameLengths); // [5, 3, 7]
+    ```
+
+- **Filtering Data**: Using `filter()` to extract elements that meet specific criteria.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+    List<Integer> evenNumbers = numbers.stream()
+            .filter(n -> n % 2 == 0)
+            .collect(Collectors.toList());
+    System.out.println(evenNumbers); // [2, 4]
+    ```
+
+- **Sorting**: Sorting collections using `sorted()` for natural or custom order.  
+    **Example**:
+    ```java
+    List<String> names = Arrays.asList("Charlie", "Alice", "Bob");
+    List<String> sortedNames = names.stream()
+            .sorted()
+            .collect(Collectors.toList());
+    System.out.println(sortedNames); // [Alice, Bob, Charlie]
+    ```
+
+### **Aggregation and Reduction**
+
+#### 🔹 Description:
+
+Aggregation and reduction are operations that combine multiple elements of a stream into a single result. These operations are commonly used for tasks like summing, averaging, finding the maximum or minimum, and concatenating strings.
+
+#### 🔹 Example: Summing Numbers
+
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream().reduce(0, Integer::sum);
+System.out.println(sum); // Output: 15
+```
+
+#### 🔹 Example: Finding Maximum
+
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int max = numbers.stream().reduce(Integer.MIN_VALUE, Integer::max);
+System.out.println(max); // Output: 5
+```
+
+#### 🔹 Example: Concatenating Strings
+
+```java
+List<String> words = Arrays.asList("Java", "is", "fun");
+String sentence = words.stream().reduce("", (a, b) -> a + " " + b).trim();
+System.out.println(sentence); // Output: Java is fun
+```
+
+#### 🔹 Use Case:
+
+- Summing up numerical data (e.g., calculating total sales).
+- Finding the maximum or minimum value in a dataset (e.g., highest score in a game).
+- Concatenating strings for reporting or logging purposes.
+- Performing custom aggregations in data processing pipelines.
+- Simplifying complex calculations in functional programming workflows.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+    int sum = numbers.stream()
+            .reduce(0, Integer::sum);
+    System.out.println(sum); // 15
+    ```
+
+- **Grouping and Partitioning**: Grouping data by attributes using `Collectors.groupingBy()`.  
+    **Example**:
+    ```java
+    List<String> items = Arrays.asList("apple", "banana", "apricot", "blueberry");
+    Map<Character, List<String>> grouped = items.stream()
+            .collect(Collectors.groupingBy(item -> item.charAt(0)));
+    System.out.println(grouped); // {a=[apple, apricot], b=[banana, blueberry]}
+    ```
+
+- **Joining Data**: Concatenating elements into a single string using `Collectors.joining()`.  
+    **Example**:
+    ```java
+    List<String> words = Arrays.asList("Java", "is", "fun");
+    String sentence = words.stream()
+            .collect(Collectors.joining(" "));
+    System.out.println(sentence); // Java is fun
+    ```
+
+- **Parallel Processing**: Leveraging `parallelStream()` for concurrent processing.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+    int sum = numbers.parallelStream()
+            .reduce(0, Integer::sum);
+    System.out.println(sum); // 15
+    ```
+
+- **Pagination**: Using `skip()` and `limit()` to implement pagination.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    List<Integer> page = numbers.stream()
+            .skip(3)
+            .limit(3)
+            .collect(Collectors.toList());
+    System.out.println(page); // [4, 5, 6]
+    ```
+
+- **Deduplication**: Removing duplicate elements using `distinct()`.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 3, 4);
+    List<Integer> uniqueNumbers = numbers.stream()
+            .distinct()
+            .collect(Collectors.toList());
+    System.out.println(uniqueNumbers); // [1, 2, 3, 4]
+    ```
+
+- **Debugging and Logging**: Using `peek()` to inspect elements during processing.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3);
+    numbers.stream()
+            .peek(n -> System.out.println("Processing: " + n))
+            .map(n -> n * 2)
+            .forEach(System.out::println);
+    ```
+
+- **Data Collection**: Collecting processed data into collections like `List`, `Set`, or `Map`.  
+    **Example**:
+    ```java
+    List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+    Set<String> nameSet = names.stream()
+            .collect(Collectors.toSet());
+    System.out.println(nameSet); // [Alice, Bob, Charlie]
+    ```
+
+- **Statistical Analysis**: Using `Collectors.summarizingInt()` to calculate statistics.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+    IntSummaryStatistics stats = numbers.stream()
+            .collect(Collectors.summarizingInt(Integer::intValue));
+    System.out.println(stats); // IntSummaryStatistics{count=5, sum=15, min=1, average=3.000000, max=5}
+    ```
+
+- **Custom Reductions**: Using `reduce()` for custom aggregation logic.  
+    **Example**:
+    ```java
+    List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+    int product = numbers.stream()
+            .reduce(1, (a, b) -> a * b);
+    System.out.println(product); // 120
+    ```
+
+- **Event Processing**: Processing streams of events in real-time applications.  
+    **Example**:
+    ```java
+    List<String> events = Arrays.asList("event1", "event2", "event3");
+    events.stream()
+            .filter(event -> event.startsWith("event"))
+            .forEach(System.out::println);
+    ```
+
+- **File and I/O Operations**: Reading and processing files line by line.  
+    **Example**:
+    ```java
+    try (Stream<String> lines = Files.lines(Paths.get("data.txt"))) {
+            lines.filter(line -> line.contains("error"))
+                    .forEach(System.out::println);
+    } catch (IOException e) {
+            e.printStackTrace();
+    }
+    ```
+
+- **Database Result Set Processing**: Transforming and aggregating database results.  
+    **Example**:
+    ```java
+    List<String> results = Arrays.asList("row1", "row2", "row3");
+    List<String> processedResults = results.stream()
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+    System.out.println(processedResults); // [ROW1, ROW2, ROW3]
+    ```
+
+- **Pipeline Processing**: Building complex data processing pipelines for analytics or ETL.  
+    **Example**:
+    ```java
+    List<String> data = Arrays.asList("apple", "banana", "cherry");
+    List<String> processedData = data.stream()
+            .filter(item -> item.startsWith("a"))
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+    System.out.println(processedData); // [APPLE]
+    ```
+
+- **Asynchronous Workflows**: Combining streams with `CompletableFuture`.  
+    **Example**:
+    ```java
+    CompletableFuture.supplyAsync(() -> "Data")
+            .thenApply(String::toUpperCase)
+            .thenAccept(System.out::println); // DATA
+    ```
+
+Streams provide a declarative and functional approach to data processing, making them a powerful tool for simplifying complex workflows in enterprise applications.
+
+- Data transformation and aggregation.
+- Sorting and filtering collections.
+- Performing analytics over collections or database result sets.
+- Simplifying complex data processing pipelines.
+
+--- 
 
 _(Already Covered Above)_
 

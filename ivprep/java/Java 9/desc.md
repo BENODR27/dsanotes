@@ -80,15 +80,69 @@ Interfaces can now contain `private` methods to share code between `default` and
 #### 🔹 Example:
 
 ```java
+```java
 interface Loggable {
     default void logInfo(String msg) {
         log(msg, "INFO");
+    }
+
+    default void logError(String msg) {
+        log(msg, "ERROR");
+    }
+
+    default void logDebug(String msg) {
+        log(msg, "DEBUG");
     }
 
     private void log(String msg, String level) {
         System.out.println("[" + level + "] " + msg);
     }
 }
+
+// Usage in a Spring Component
+@Component
+public class MyService implements Loggable {
+
+    public void performTask() {
+        logInfo("Task started");
+        try {
+            // Simulate task
+            logDebug("Processing task...");
+            // Simulate success
+            logInfo("Task completed successfully");
+        } catch (Exception e) {
+            logError("Task failed: " + e.getMessage());
+        }
+    }
+}
+
+// Example Spring Boot Application
+@SpringBootApplication
+public class Application {
+
+    public static void main(String[] args) {
+        ApplicationContext context = SpringApplication.run(Application.class, args);
+        MyService myService = context.getBean(MyService.class);
+        myService.performTask();
+    }
+}
+```
+
+### Explanation:
+1. **Interface Methods**:
+   - `logInfo(String msg)`: Logs an informational message.
+   - `logError(String msg)`: Logs an error message.
+   - `logDebug(String msg)`: Logs a debug message.
+   - `log(String msg, String level)`: A private method used internally by the default methods to format and print logs.
+
+2. **Usage in Spring**:
+   - The `Loggable` interface is implemented by a Spring component (`MyService`).
+   - The logging methods are used to log messages at different levels during the execution of a task.
+
+3. **Benefits**:
+   - Reusability: The `Loggable` interface can be implemented by multiple components to standardize logging.
+   - Encapsulation: The `log` method is private, ensuring it is only used internally by the interface.
+   - Simplicity: Default methods reduce boilerplate code in implementing classes.
 ```
 
 #### 🔹 Professional Usage:

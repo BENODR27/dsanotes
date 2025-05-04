@@ -576,8 +576,167 @@ _(Already Covered Above)_
 
 Additional Classes:
 
-- `Period`, `Duration`, `ChronoUnit` for calculating differences.
-- `DateTimeFormatter` for parsing/formatting.
+### **Period, Duration, and ChronoUnit for Calculating Differences**
+
+#### 🔹 Description:
+
+Java 8 introduced `Period`, `Duration`, and `ChronoUnit` in the `java.time` package to calculate differences between dates and times.
+
+---
+
+#### **1. Period**
+
+- Represents a date-based amount of time (e.g., years, months, days).
+- Used for calculating differences between two `LocalDate` objects.
+
+**Example:**
+
+```java
+LocalDate startDate = LocalDate.of(2020, 1, 1);
+LocalDate endDate = LocalDate.of(2023, 6, 1);
+
+Period period = Period.between(startDate, endDate);
+System.out.println("Years: " + period.getYears());
+System.out.println("Months: " + period.getMonths());
+System.out.println("Days: " + period.getDays());
+// Output: Years: 3, Months: 5, Days: 0
+```
+
+**Use Case:**
+- Calculating age or time elapsed between two dates.
+
+---
+
+#### **2. Duration**
+
+- Represents a time-based amount of time (e.g., hours, minutes, seconds).
+- Used for calculating differences between two `LocalTime`, `LocalDateTime`, or `Instant` objects.
+
+**Example:**
+
+```java
+LocalTime startTime = LocalTime.of(10, 30);
+LocalTime endTime = LocalTime.of(12, 45);
+
+Duration duration = Duration.between(startTime, endTime);
+System.out.println("Hours: " + duration.toHours());
+System.out.println("Minutes: " + duration.toMinutes());
+// Output: Hours: 2, Minutes: 135
+```
+
+**Use Case:**
+- Measuring elapsed time in hours, minutes, or seconds.
+
+---
+
+#### **3. ChronoUnit**
+
+- Provides a more granular way to calculate differences between temporal objects.
+- Supports units like `DAYS`, `HOURS`, `MINUTES`, `SECONDS`, etc.
+
+**Example:**
+
+```java
+LocalDate startDate = LocalDate.of(2020, 1, 1);
+LocalDate endDate = LocalDate.of(2023, 6, 1);
+
+long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+long monthsBetween = ChronoUnit.MONTHS.between(startDate, endDate);
+
+System.out.println("Days: " + daysBetween);
+System.out.println("Months: " + monthsBetween);
+// Output: Days: 1247, Months: 41
+```
+
+**Use Case:**
+- Calculating differences in specific units (e.g., days, months, years).
+
+---
+
+### **DateTimeFormatter for Parsing/Formatting**
+
+#### 🔹 Description:
+
+`DateTimeFormatter` is used to parse and format date-time objects in Java 8. It provides predefined formats and allows custom patterns.
+
+---
+
+#### **1. Predefined Formats**
+
+- `DateTimeFormatter.ISO_LOCAL_DATE`: Formats as `yyyy-MM-dd`.
+- `DateTimeFormatter.ISO_LOCAL_DATE_TIME`: Formats as `yyyy-MM-dd'T'HH:mm:ss`.
+
+**Example:**
+
+```java
+LocalDate date = LocalDate.now();
+String formattedDate = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+System.out.println(formattedDate); // e.g., 2023-06-01
+```
+
+**Use Case:**
+- Quickly format dates using standard ISO formats.
+
+---
+
+#### **2. Custom Patterns**
+
+- Define custom patterns using symbols like `yyyy`, `MM`, `dd`, `HH`, `mm`, `ss`.
+
+**Example:**
+
+```java
+LocalDateTime dateTime = LocalDateTime.now();
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+String formattedDateTime = dateTime.format(formatter);
+System.out.println(formattedDateTime); // e.g., 01-06-2023 14:30:45
+```
+
+**Use Case:**
+- Formatting dates and times for user-friendly display or specific business requirements.
+
+---
+
+#### **3. Parsing Strings to Dates**
+
+- Convert a string into a `LocalDate`, `LocalTime`, or `LocalDateTime` using `DateTimeFormatter`.
+
+**Example:**
+
+```java
+String dateStr = "01-06-2023";
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+LocalDate parsedDate = LocalDate.parse(dateStr, formatter);
+System.out.println(parsedDate); // 2023-06-01
+```
+
+**Use Case:**
+- Parsing user input or data from external sources into date-time objects.
+
+---
+
+#### **4. Locale-Specific Formatting**
+
+- Format dates and times based on a specific locale.
+
+**Example:**
+
+```java
+LocalDate date = LocalDate.now();
+DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy", Locale.US);
+
+String formattedDate = date.format(formatter);
+System.out.println(formattedDate); // e.g., Thursday, June 01, 2023
+```
+
+**Use Case:**
+- Displaying dates in a locale-specific format for internationalization.
+
+---
+
+These tools (`Period`, `Duration`, `ChronoUnit`, and `DateTimeFormatter`) provide powerful and flexible ways to handle date-time calculations and formatting in Java 8.
 
 ```java
 LocalDate dob = LocalDate.of(1995, 5, 23);
@@ -643,6 +802,7 @@ public class Meeting {}
 @interface Schedules {
     Schedule[] value();
 }
+```
 ```
 
 #### 🔹 Use Case:
@@ -931,8 +1091,94 @@ Efficient parallel traversal of large data structures (e.g., in distributed proc
 
 ### 28. **`java.util.concurrent` Enhancements**
 
-- **`StampedLock`**: A new kind of lock with an additional feature for optimizations based on reading and writing locks.
-- **`CompletableFuture`**: We already discussed this, but note its integration with `ExecutorService` to handle asynchronous computation better.
+#### 🔹 **`StampedLock`**
+
+`StampedLock` is a new type of lock introduced in Java 8 that provides an alternative to traditional read-write locks. It allows for optimistic reads, which can improve performance in scenarios where reads are more frequent than writes.
+
+#### 🔹 Key Features:
+
+- **Optimistic Reads**: Allows threads to read data without blocking, as long as no write occurs during the read.
+- **Read and Write Locks**: Supports traditional read and write locks for scenarios requiring stricter synchronization.
+- **Stamp-Based Validation**: Uses a stamp (long value) to validate whether the lock state has changed during an optimistic read.
+
+#### 🔹 Code Example:
+
+```java
+import java.util.concurrent.locks.StampedLock;
+
+public class StampedLockExample {
+    private double x, y;
+    private final StampedLock lock = new StampedLock();
+
+    // Write method
+    public void move(double deltaX, double deltaY) {
+        long stamp = lock.writeLock();
+        try {
+            x += deltaX;
+            y += deltaY;
+        } finally {
+            lock.unlockWrite(stamp);
+        }
+    }
+
+    // Optimistic read method
+    public double distanceFromOrigin() {
+        long stamp = lock.tryOptimisticRead();
+        double currentX = x, currentY = y;
+
+        // Validate the stamp to ensure no write occurred
+        if (!lock.validate(stamp)) {
+            stamp = lock.readLock();
+            try {
+                currentX = x;
+                currentY = y;
+            } finally {
+                lock.unlockRead(stamp);
+            }
+        }
+        return Math.sqrt(currentX * currentX + currentY * currentY);
+    }
+}
+```
+
+#### 🔹 Use Case:
+
+- Optimizing performance in applications with frequent reads and infrequent writes, such as caching systems or analytics dashboards.
+
+---
+
+#### 🔹 **`CompletableFuture` Integration with `ExecutorService`**
+
+`CompletableFuture` can be integrated with `ExecutorService` to handle asynchronous computations more effectively. By providing a custom executor, you can control the thread pool used for executing tasks.
+
+#### 🔹 Code Example:
+
+```java
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class CompletableFutureWithExecutor {
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        CompletableFuture.supplyAsync(() -> {
+            System.out.println("Task running in: " + Thread.currentThread().getName());
+            return "Result";
+        }, executor).thenAccept(result -> {
+            System.out.println("Processed result: " + result);
+        });
+
+        executor.shutdown();
+    }
+}
+```
+
+#### 🔹 Use Case:
+
+- Managing thread pools for asynchronous tasks in high-performance applications, such as web servers or microservices.
+
+These enhancements in `java.util.concurrent` provide powerful tools for building scalable and efficient concurrent applications.
 
 ---
 

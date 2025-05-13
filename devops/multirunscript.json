@@ -1,0 +1,12 @@
+{
+  "name": "multi-apps",
+  "scripts": {
+    "start:authguard":"cd backend/authguard && mvn spring-boot:run",
+    "start:watchman": "cd backend/watchman && npm start",
+    "start:pms": "cd backend/pms && npm start",
+    "start:storage-service": "cd backend/storage-service && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "start:all": "npm-run-all --parallel start:authguard start:watchman start:pms start:storage-service start:frontend"
+  }
+}
+ 

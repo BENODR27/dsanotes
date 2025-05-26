@@ -18,7 +18,7 @@ While LeetCode doesn't explicitly categorize problems based on Java Streams, man
   - **Java Streams Approach**: Use `map()` to transform the array.
     ```java
     int[] ans = IntStream.range(0, nums.length)
-                         .map(i -> nums[nums[i]])
+                         .map(i -> nums[nums[i]]) 
                          .toArray();
     ```
 
@@ -31,8 +31,8 @@ While LeetCode doesn't explicitly categorize problems based on Java Streams, man
   - **Java Streams Approach**: Use `flatMap()` to split sentences into words and `filter()` to find uncommon words.
     ```java
     String[] words = (A + " " + B).split(" ");
-    Map<String, Long> freq = Arrays.stream(words)
-                                   .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
+    Map<String, Long> freq = Arrays.stream()
+                                   .collect(Colwordslectors.groupingBy(w -> w, Collectors.counting()));
     List<String> result = freq.entrySet().stream()
                               .filter(e -> e.getValue() == 1)
                               .map(Map.Entry::getKey)

@@ -1,5 +1,9 @@
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.IntSummaryStatistics;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class StreamTest {
     interface GreetingService {
@@ -17,8 +21,9 @@ public class StreamTest {
 
         // Convert to uppercase and print each word
         Arrays.stream(words)
+                .skip(2)
                 .filter(e -> e.startsWith("q"))
-                .map(String::toLowerCase)
+                .map(e -> e.toUpperCase())
                 .forEach(System.out::println);
 
         // Count the number of words that start with 'a'
@@ -31,6 +36,18 @@ public class StreamTest {
 
         service.greet("beno");
         System.out.println(Base64.getEncoder().encodeToString("Hello0 Worlddjfffffffffffffffffff".getBytes()));
+
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+        IntSummaryStatistics stats = numbers.stream()
+                .collect(Collectors.summarizingInt(Integer::intValue));
+        System.out.println(stats);
+
+        CompletableFuture.supplyAsync(() -> "Data")
+                .thenApply(data -> {
+                    System.out.println("Processing " + data);
+                    return data;
+                })
+                .thenAccept(System.out::println);
 
     }
 }

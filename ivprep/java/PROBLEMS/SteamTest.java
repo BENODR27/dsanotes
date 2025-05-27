@@ -48,6 +48,10 @@ public class StreamTest {
                     return data;
                 })
                 .thenAccept(System.out::println);
+                
+        int sum = String.valueOf(12345).chars().map(Character::getNumericValue).sum();
+        System.out.println("Sum of digits: " + sum);
+
 
     }
 }

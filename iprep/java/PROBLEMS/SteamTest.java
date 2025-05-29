@@ -41,7 +41,7 @@ public class StreamTest {
         service.greet("beno");
         System.out.println(Base64.getEncoder().encodeToString("Hello0 Worlddjfffffffffffffffffff".getBytes()));
 
-        List<Integer> numbers = Arrays.asList(1, 2,2, 3, 4,4, 5);
+        List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 4, 4, 5);
         IntSummaryStatistics stats = numbers.stream()
                 .collect(Collectors.summarizingInt(Integer::intValue));
         System.out.println(stats);
@@ -67,13 +67,14 @@ public class StreamTest {
                 .orElse(null);
 
         System.out.println("First non-repeating character: " + result);
-         Set<Integer> seen = new HashSet<>();
+        Set<Integer> seen = new HashSet<>();
         Set<Integer> duplicatesAlt = numbers.stream()
-            .filter(n -> !seen.add(n))
-            .collect(Collectors.toSet());
-       
+                .filter(n -> !seen.add(n))
+                .collect(Collectors.toSet());
 
         System.out.println("Duplicates: " + duplicatesAlt);
+
+        System.out.println(String.valueOf(54325).chars().map(Character::getNumericValue).sum());
 
     }
 }

@@ -1,29 +1,24 @@
-import java.util.*;
+import java.util.Deque;
+import java.util.ArrayDeque;
+import java.util.Map;
 
 public class ValidParentheses {
+    private static final Map<Character, Character> PAIRS = Map.of(
+            ')', '(',
+            '}', '{',
+            ']', '[');
+
     public static boolean isValid(String s) {
-        Stack<Character> stack = new Stack<>();
-
+        Deque<Character> stack = new ArrayDeque<>();
         for (char ch : s.toCharArray()) {
-            // If it's an opening bracket, push to stack
-            if (ch == '(' || ch == '{' || ch == '[') {
+            if (PAIRS.containsValue(ch)) {
                 stack.push(ch);
-            } else {
-                // If stack is empty, nothing to match with
-                if (stack.isEmpty())
-                    return false;
-
-                // Pop and check if it matches the corresponding open bracket
-                char open = stack.pop();
-                if ((ch == ')' && open != '(') ||
-                        (ch == '}' && open != '{') ||
-                        (ch == ']' && open != '[')) {
+            } else if (PAIRS.containsKey(ch)) {
+                if (stack.isEmpty() || stack.pop() != PAIRS.get(ch)) {
                     return false;
                 }
             }
         }
-
-        // If the stack is empty, all brackets matched
         return stack.isEmpty();
     }
 

@@ -182,4 +182,3 @@ Would you like me to generate:
 - ✅ Full project code for backend + frontend (as per JD)?
 - ✅ Sample HR interview answers specific to Emirates?
 
-Let me know and I’ll include them right here.

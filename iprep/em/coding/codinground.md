@@ -4,6 +4,8 @@ While specific HackerRank problems used by Emirates Group IT for Senior Software
 
 ### 🧪 **HackerRank Assessment Structure at Emirates**
 
+https://www.hackerrank.com/domains/java
+
 Candidates have reported that the HackerRank assessment typically comprises:
 
 - **Number of Questions**: 2 coding problems.
@@ -144,5 +146,3 @@ Here is a **realistic list of HackerRank-style coding problems** based on the pa
 - **Use IDE only if allowed**: Most HackerRank rounds are browser-based, so practice there.
 
 ---
-
-

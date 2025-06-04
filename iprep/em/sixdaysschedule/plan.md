@@ -20,7 +20,7 @@ Here's a **6-day intensive interview preparation roadmap** tailored to the **Sen
 - Functional interfaces, Streams API, Lambdas.
 - Optional, DateTime API, CompletableFuture.
 
-✔️ Practice:
+✔️ Practice: -https://www.geeksforgeeks.org/java-pattern-programs/ -opt
 
 - Java 8 Stream problems (e.g., groupBy, map/filter/reduce).
 - Write `Employee` and `FlightBooking` domain-based problems.
@@ -31,6 +31,7 @@ Here's a **6-day intensive interview preparation roadmap** tailored to the **Sen
 - Focus on how they apply to Spring Boot microservices.
 
 📚 Resource: Clean Code (Chapter 1–3) + GeeksforGeeks Java patterns.
+https://www.geeksforgeeks.org/java-design-patterns/
 
 ---
 
@@ -181,4 +182,3 @@ Would you like me to generate:
 - ✅ A downloadable 6-day checklist (PDF)?
 - ✅ Full project code for backend + frontend (as per JD)?
 - ✅ Sample HR interview answers specific to Emirates?
-

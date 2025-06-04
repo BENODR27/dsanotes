@@ -1,42 +1,51 @@
-import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TokenBucketRateLimiter {
-    private final int capacity;
-    private final int refillRate; // tokens per second
-    private double currentTokens;
-    private long lastRefillTimestamp;
 
-    public TokenBucketRateLimiter(int capacity, int refillRate) {
+    private final int capacity; // Max tokens
+    private final int refillRatePerSecond; // How many tokens added per second
+    private double currentTokens; // Current tokens in bucket
+    private long lastRefillTimestamp; // When we last refilled
+
+    public TokenBucketRateLimiter(int capacity, int refillRatePerSecond) {
         this.capacity = capacity;
-        this.refillRate = refillRate;
+        this.refillRatePerSecond = refillRatePerSecond;
         this.currentTokens = capacity;
         this.lastRefillTimestamp = System.nanoTime();
     }
 
     public synchronized boolean allowRequest() {
-        refill();
+        refill(); // Refill tokens based on elapsed time
 
         if (currentTokens >= 1) {
             currentTokens -= 1;
             return true; // Allow request
+        } else {
+            return false; // Reject due to rate limit
         }
-        return false; // Reject request
     }
 
     private void refill() {
         long now = System.nanoTime();
-        double tokensToAdd = ((now - lastRefillTimestamp) / 1e9) * refillRate;
-        currentTokens = Math.min(capacity, currentTokens + tokensToAdd);
-        lastRefillTimestamp = now;
+        double secondsPassed = (now - lastRefillTimestamp) / 1_000_000_000.0;
+
+        double tokensToAdd = secondsPassed * refillRatePerSecond;
+        if (tokensToAdd > 0) {
+            currentTokens = Math.min(capacity, currentTokens + tokensToAdd);
+            lastRefillTimestamp = now;
+        }
     }
 
-    // For test/demo
     public static void main(String[] args) throws InterruptedException {
-        TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(5, 1); // 5 tokens, refill 1/sec
+        TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(5, 2); // 5 tokens max, 2 tokens/sec
 
-        for (int i = 1; i <= 10; i++) {
-            Thread.sleep(300); // simulate 300ms between requests
-            System.out.println("Request " + i + ": " + limiter.allowRequest());
+        for (int i = 0; i < 10; i++) {
+            if (limiter.allowRequest()) {
+                System.out.println("Request " + i + " allowed");
+            } else {
+                System.out.println("Request " + i + " denied (rate limited)");
+            }
+            Thread.sleep(300); // simulate time gap
         }
     }
 }

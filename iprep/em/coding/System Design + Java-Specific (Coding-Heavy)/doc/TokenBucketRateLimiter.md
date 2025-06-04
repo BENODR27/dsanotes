@@ -1,89 +1,89 @@
-Here’s a complete explanation and **Java 8 implementation** of a **Rate Limiter** using both **Leaky Bucket** and **Token Bucket** approaches, specifically tailored for **coding-heavy system design rounds** like those at **Emirates Group IT**.
+### ✅ 1. **Design a Rate Limiter** (Leaky Bucket / Token Bucket) — Java 8 System Design + Code
+
+Rate limiters are commonly asked in **Emirates Group IT**, **FAANG**, and **high-scale system design interviews**.
 
 ---
 
-## ✅ 1. System Design: **Rate Limiter**
+### 🔧 Problem Statement:
 
-### What is a Rate Limiter?
-
-A **rate limiter** controls how frequently a user/service can access an API within a specific time window — e.g., "100 requests per minute."
+Design a **Rate Limiter** that allows **N requests per second** for a user or API key. Block excess requests.
 
 ---
 
-## 💡 Two Common Algorithms:
+## 🧠 Two Popular Algorithms:
 
-### 1. **Leaky Bucket**:
-
-- Think of a bucket leaking water at a constant rate.
-- Incoming requests are "poured" into the bucket.
-- If the bucket overflows => reject the request.
-
-### 2. **Token Bucket**:
-
-- A bucket is filled with **tokens** at a fixed rate.
-- Each request **consumes one token**.
-- If no tokens available => reject the request.
+| Algorithm        | Analogy                                              | Control Style              |
+| ---------------- | ---------------------------------------------------- | -------------------------- |
+| **Token Bucket** | Tokens are added per second; requests consume tokens | **Bursty Traffic Allowed** |
+| **Leaky Bucket** | Requests drip at a fixed rate                        | **Smooth Rate, No Burst**  |
 
 ---
 
-## 🧪 Use Case (API Throttling):
-
-> Only allow **N requests per user/IP per second/minute**.
+## ✅ We’ll implement **Token Bucket** in Java 8
 
 ---
 
-## ✅ Java 8: **Token Bucket Implementation**
+### 💡 Token Bucket Intuition:
 
-### 🔧 Requirements:
-
-- Add tokens at a fixed interval.
-- Allow a request only if at least 1 token is available.
-- Each token = permission to send 1 request.
+- **Bucket holds tokens** (max size = `capacity`)
+- Every **1/N seconds**, we **refill tokens**
+- Each request **takes 1 token**
+- If token available ⇒ ✅ Allow
+- If not ⇒ ❌ Reject (Rate Limit)
 
 ---
 
-### 🔽 Java Code
+## ✅ Java 8 Code: Token Bucket Rate Limiter
 
 ```java
-import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TokenBucketRateLimiter {
-    private final int capacity;
-    private final int refillRate; // tokens per second
-    private double currentTokens;
-    private long lastRefillTimestamp;
 
-    public TokenBucketRateLimiter(int capacity, int refillRate) {
+    private final int capacity;               // Max tokens
+    private final int refillRatePerSecond;    // How many tokens added per second
+    private double currentTokens;             // Current tokens in bucket
+    private long lastRefillTimestamp;         // When we last refilled
+
+    public TokenBucketRateLimiter(int capacity, int refillRatePerSecond) {
         this.capacity = capacity;
-        this.refillRate = refillRate;
+        this.refillRatePerSecond = refillRatePerSecond;
         this.currentTokens = capacity;
         this.lastRefillTimestamp = System.nanoTime();
     }
 
     public synchronized boolean allowRequest() {
-        refill();
+        refill();  // Refill tokens based on elapsed time
 
         if (currentTokens >= 1) {
             currentTokens -= 1;
-            return true; // Allow request
+            return true;  // Allow request
+        } else {
+            return false; // Reject due to rate limit
         }
-        return false; // Reject request
     }
 
     private void refill() {
         long now = System.nanoTime();
-        double tokensToAdd = ((now - lastRefillTimestamp) / 1e9) * refillRate;
-        currentTokens = Math.min(capacity, currentTokens + tokensToAdd);
-        lastRefillTimestamp = now;
+        double secondsPassed = (now - lastRefillTimestamp) / 1_000_000_000.0;
+
+        double tokensToAdd = secondsPassed * refillRatePerSecond;
+        if (tokensToAdd > 0) {
+            currentTokens = Math.min(capacity, currentTokens + tokensToAdd);
+            lastRefillTimestamp = now;
+        }
     }
 
-    // For test/demo
     public static void main(String[] args) throws InterruptedException {
-        TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(5, 1); // 5 tokens, refill 1/sec
+        TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(5, 2); // 5 tokens max, 2 tokens/sec
 
-        for (int i = 1; i <= 10; i++) {
-            Thread.sleep(300); // simulate 300ms between requests
-            System.out.println("Request " + i + ": " + limiter.allowRequest());
+        for (int i = 0; i < 10; i++) {
+            if (limiter.allowRequest()) {
+                System.out.println("Request " + i + " allowed");
+            } else {
+                System.out.println("Request " + i + " denied (rate limited)");
+            }
+            Thread.sleep(300); // simulate time gap
         }
     }
 }
@@ -91,49 +91,32 @@ public class TokenBucketRateLimiter {
 
 ---
 
-## 🧸 Step-by-Step (Like a Child)
+### 🧒 Step-by-Step Like a Child:
 
-- 🎈 You start with a bucket full of tokens (say 5).
-- ⏳ Every second, a new token is added (up to 5 max).
-- 🤚 Each request takes 1 token. If none left, it gets rejected.
-- 📏 This keeps your system fair — no one can overuse the API.
+1. Imagine a **bucket of coins (tokens)**.
+2. Every second, we **add 2 coins**.
+3. Every time someone sends a request, we ask:
 
----
+   > Do we have a coin?
 
-## ⚙️ Time Complexity
-
-| Operation      | Complexity |
-| -------------- | ---------- |
-| `allowRequest` | O(1)       |
-| `refill`       | O(1)       |
+4. If yes ⇒ take a coin ⇒ ✅ Allow the request.
+5. If no coins ⇒ ❌ Deny it (Too many requests).
+6. We **refill the bucket every second** (like a water drip).
 
 ---
 
-## 🧪 Unit Test Stub (JUnit 5)
+### ⏱ Time Complexity:
 
-```java
-@Test
-public void testRateLimiter() throws InterruptedException {
-    TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(2, 1);
-
-    assertTrue(limiter.allowRequest());
-    assertTrue(limiter.allowRequest());
-    assertFalse(limiter.allowRequest());
-
-    Thread.sleep(1000); // wait for refill
-    assertTrue(limiter.allowRequest());
-}
-```
+- `O(1)` per request (because refill logic is constant-time)
 
 ---
 
-## 🆚 Want Leaky Bucket Version?
+### 🧠 Use Cases in Real World:
 
-If you'd like the **Leaky Bucket** version (queue + fixed drain rate), just say the word — I’ll share a Java version with complete explanation.
+- API Gateways (AWS API Gateway, Google Cloud Endpoint)
+- User login rate-limiting
+- SMS/OTP limits per user/IP/device
 
-Would you also like:
+---
 
-- Redis-backed distributed rate limiter?
-- OpenShift/Kubernetes-compatible version for microservices?
-
-Let me know!
+Would you like a **Leaky Bucket version**, or want to implement **Distributed Rate Limiting with Redis** (used in Emirates-scale systems)?

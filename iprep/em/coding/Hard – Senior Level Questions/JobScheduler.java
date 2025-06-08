@@ -28,11 +28,4 @@ public class JobScheduler {
         int n = 2;
         System.out.println("Minimum intervals: " + scheduler.leastInterval(tasks, n)); // Output: 8
     }
-
-    public static void main(String[] args) {
-        JobScheduler scheduler = new JobScheduler();
-        char[] tasks = { 'A', 'A', 'A', 'B', 'B', 'B' };
-        int n = 2;
-        System.out.println("Minimum intervals: " + scheduler.leastInterval(tasks, n)); // Output: 8
-    }
 }

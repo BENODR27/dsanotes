@@ -14,7 +14,6 @@ public class GroupAnagrams {
             // Step 2: Add to map
             map.computeIfAbsent(sorted, k -> new ArrayList<>()).add(str);
         }
-
         return new ArrayList<>(map.values());
     }
 

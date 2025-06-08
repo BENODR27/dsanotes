@@ -14,7 +14,7 @@ class LRUCache extends LinkedHashMap<Integer, Integer> {
 
     public void put(int key, int value) {
         super.put(key, value);
-    }
+    } 
 
     @Override
     protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {

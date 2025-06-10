@@ -1,7 +1,3 @@
-package iprep.em.coding;
-
-public class ShortestPathInGrid {
-
 import java.util.*;
 
 public class ShortestPathInGrid {
@@ -60,4 +56,4 @@ public class ShortestPathInGrid {
     }
 }
 
-}
+

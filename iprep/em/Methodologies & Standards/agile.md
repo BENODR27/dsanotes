@@ -303,3 +303,63 @@ I can provide:
 * [ ] Technical Agile Retrospective Examples
 
 Just let me know what you'd like next.
+Sure! Here’s a detailed explanation of each practice you mentioned, **all important for ensuring quality in Agile development**:
+
+---
+
+### 1. **Shift-left testing**
+
+* **What it is:** Moving testing activities earlier in the software development lifecycle (SDLC), ideally starting from the design and development phases instead of just at the end.
+* **Why it matters:** Detecting defects early reduces cost and effort for fixing bugs.
+* **How it works:** Developers write and run tests while coding (unit tests), and QA starts testing with early builds or mocks.
+
+---
+
+### 2. **TDD (Test-Driven Development), Unit + Integration Tests**
+
+* **TDD:** Write a failing test first, then write code to pass the test, then refactor. Cycle repeats.
+* **Unit tests:** Verify individual components or methods in isolation.
+* **Integration tests:** Verify combined parts of the system work together.
+* **Benefits:** Leads to better design, higher code coverage, and fewer bugs.
+
+---
+
+### 3. **Code reviews & Pair programming**
+
+* **Code reviews:** Developers check each other’s code for errors, style, and logic before merging.
+* **Pair programming:** Two developers work together on the same code, catching defects and sharing knowledge in real-time.
+* **Impact:** Improves code quality, spreads domain knowledge, and reduces bugs early.
+
+---
+
+### 4. **CI/CD pipelines**
+
+* **CI (Continuous Integration):** Developers merge code frequently to a shared repo; automated builds and tests run on each merge to catch issues early.
+* **CD (Continuous Delivery/Deployment):** Automatically deploys the tested build to staging or production.
+* **Purpose:** Ensures fast, reliable, and repeatable delivery of working software with quality checks embedded.
+
+---
+
+### 5. **Static analysis (e.g., SonarQube)**
+
+* **Static code analysis:** Automated tools analyze source code for code smells, vulnerabilities, complexity, and standards compliance **without running the code**.
+* **SonarQube:** Popular tool that integrates into CI pipelines and provides detailed reports.
+* **Why:** Helps maintain code quality, security, and maintainability over time.
+
+---
+
+### 6. **Done criteria includes testing, code quality**
+
+* The **Definition of Done (DoD)** is a checklist that ensures a story or task is truly complete.
+* Beyond coding, it requires:
+
+  * Passing unit and integration tests
+  * Code reviewed and merged
+  * Static analysis passed with no critical issues
+  * Documentation updated if needed
+  * Deployed to staging or demo environment
+* This ensures that “done” means **production-ready**, not just “code written.”
+
+---
+
+Would you like examples or templates to implement these in your team or project?

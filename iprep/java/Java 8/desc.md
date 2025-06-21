@@ -39,7 +39,7 @@ List<String> filtered = names.stream()
     .filter(name -> name.startsWith("A"))
     .map(String::toUpperCase)
     .collect(Collectors.toList());
-System.out.println(filtered); // Output: [ALICE]
+System.out.println(filtered); 
 ```
 
 #### 🔹 Professional Usage:
@@ -48,7 +48,7 @@ Data transformation, aggregation, sorting, analytics over collections and DB res
 
 ---
 
-### 3. **Functional Interfaces**
+### 3. **Functional Interfaces** 
 
 #### 🔹 Use Case:
 

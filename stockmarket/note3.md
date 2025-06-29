@@ -166,4 +166,4 @@ Great! Here's a detailed glossary of **essential stock market terms** with clear
 
 ---
 
-Would you like this as a **downloadable PDF** or shown in a **web app** format with visuals? I can build it for you. Also, I can continue adding **advanced concepts (Greeks, strategy comparisons, etc.)** if you're interested.
+

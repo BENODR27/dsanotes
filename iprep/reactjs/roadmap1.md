@@ -16,8 +16,8 @@ Okay, here is a comprehensive roadmap tailored for preparing for a Senior React 
     * Data Types & Structures: Primitives, Objects, Arrays.
     * Functions: Arrow functions (`=>`), `this` keyword differences, default parameters, rest/spread operators (`...`).
     * Control Flow: Conditionals, loops.
-    * Object/Array Methods: `.map()`, `.filter()`, `.reduce()`, `.find()`, `.forEach()`, object destructuring, array destructuring.
-    * Asynchronous JavaScript: Promises (`.then()`, `.catch()`, `.finally()`), `async`/`await`. Event Loop concept (basic understanding).
+
+
     * Modules: ES Modules (`import`/`export`).
     * Classes (understand for legacy code/concepts, but focus on functions).
 

@@ -69,6 +69,9 @@ setup(
 ```bash
 python setup.py build
 python setup.py install
+
+
+python setup.py build_ext --inplace (dev)
 ```
 
 Now you can use it in Python:

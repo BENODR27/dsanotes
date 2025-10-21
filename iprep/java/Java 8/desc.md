@@ -15,7 +15,7 @@ Simplify implementation of functional interfaces (e.g., event handlers, comparat
 #### 🔹 Code Example:
 
 ```java
-List<String> names = Arrays.asList("Emirates", "Dubai", "Java");
+List<String> names = Arrays.asList("Tests", "Test2", "Java");
 names.forEach(name -> System.out.println("Hello " + name));
 ```
 
@@ -107,7 +107,7 @@ Avoid null checks and `NullPointerException`. Encourage better error handling.
 #### 🔹 Code Example:
 
 ```java
-Optional<String> optionalName = Optional.of("Emirates");
+Optional<String> optionalName = Optional.of("Tests");
 optionalName.ifPresent(name -> System.out.println(name.toUpperCase()));
 ```
 
@@ -1222,7 +1222,7 @@ New methods were added to the `Optional` class to make it more powerful:
 #### 🔹 Example:
 
 ```java
-Optional<String> optional = Optional.of("Emirates");
+Optional<String> optional = Optional.of("Tests");
 optional.ifPresentOrElse(
     System.out::println,
     () -> System.out.println("No value present")

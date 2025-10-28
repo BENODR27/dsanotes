@@ -27,3 +27,19 @@ class program {
 // 6 × 6 = 36 → 36 ≤ 41 ✅ (check 6)
 
 // 7 × 7 = 49 → 49 ❌ (stop here)
+
+import java.util.stream.IntStream;
+
+public class Program {
+
+    static boolean isPrime(int num) {
+        if (num <= 1) return false; // handle edge cases
+        return IntStream.rangeClosed(2, (int) Math.sqrt(num))
+                        .noneMatch(i -> num % i == 0);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isPrime(41));  // true
+        System.out.println(isPrime(42));  // false
+    }
+}

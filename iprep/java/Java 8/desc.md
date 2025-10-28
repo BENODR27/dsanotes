@@ -370,7 +370,8 @@ Streams are widely used in enterprise applications for:
 
 #### 🔹 Description:
 
-Aggregation and reduction are operations that combine multiple elements of a stream into a single result. These operations are commonly used for tasks like summing, averaging, finding the maximum or minimum, and concatenating strings.
+Aggregation and reduction are operations that combine multiple elements of a stream into a single result.
+ These operations are commonly used for tasks like summing, averaging, finding the maximum or minimum, and concatenating strings.
 
 #### 🔹 Example: Summing Numbers
 

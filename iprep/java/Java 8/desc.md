@@ -51,7 +51,7 @@ Data transformation, aggregation, sorting, analytics over collections and DB res
 ### 3. **Functional Interfaces** 
 
 #### 🔹 Use Case:
-
+qwen3:latest
 Support for lambda expressions and functional-style code.
 
 #### 🔹 Code Example:

@@ -20,3 +20,8 @@ console.error(err.response?.data || err.message);
 res.status(500).json({ error: "Error talking to model" });
 }
 });
+
+
+
+
+https://nvidia-nemo.github.io/Skills/basics/inference/#with-code-execution

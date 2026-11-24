@@ -1,0 +1,39 @@
+PRIVATE NEOLA MAC COMMON-TEST ENVIRONMENTS
+
+13 ready environment files: common-db/.env plus .env.container and .env.deploy
+for frontend, authguardv2-node, mmms-backend, storage-service,
+subscription-backend and subscription-frontend.
+
+The existing common-test database password is reused exactly. All three database
+APIs connect to the same Mac host IP on port 5433, using separate existing names:
+authguard, mmms and neola_subscriptions. Storage has no database connection.
+Existing ERP JWT signing secret/issuer/audience, Console encryption key,
+installation ID/key and subscription mode were copied unchanged. No initial-admin,
+owner-bootstrap or account reset settings are included. Login passwords live in
+the restored databases; copying environment files cannot restore users or plans.
+
+INSTALL ON MAC:
+Clone the seven repositories under ~/NeoLA with the folder names above plus common-db.
+Extract this bundle and run from its extracted folder:
+  sh install-env.sh "$HOME/NeoLA"
+The active Mac IPv4 address is detected automatically. To supply it explicitly:
+  sh install-env.sh "$HOME/NeoLA" YOUR_MAC_IP
+Existing identical env files are accepted. Different existing files are never
+silently overwritten; back up and review them before replacing with these files.
+
+START:
+In common-db: docker compose up -d --wait
+Restore your existing database backups into the three test databases on port 5433,
+then run the explicit migration jobs in the database-backed API repositories.
+In each app: docker compose --env-file .env.deploy -f compose.independent.yaml up -d --build
+
+All services bind to 0.0.0.0. API calls use the detected Mac IP and published ports
+5001-5006. There is no shared external Docker network prerequisite. PostgreSQL uses
+the existing test-only volume neola-test-pgdata. Storage uses neola-uploads.
+If a test volume already has a different password, retain its matching original
+configuration; changing POSTGRES_PASSWORD does not reset a stored role password.
+Do not use this local HTTP/development bundle in a sold production installation;
+production retains signed customer/provider profiles, private keys and HTTPS.
+
+Keep the ZIP and environment files private. They contain real secrets and must
+never be committed to GitHub. The configuration does not modify live data.

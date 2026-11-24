@@ -1,0 +1,23 @@
+PRIVATE SAVED LOGIN CREDENTIALS — NEVER COMMIT
+
+ERP superadmin
+Username: superadmin_06f42e8e
+Password: Adm!DpCXRegx5Nvld7n-BoSDerA-
+
+Subscription owner
+Username: platform.owner
+Password: pI2nsKAkFKWKO8spx2UGe1bQ2CY
+
+Subscription approver
+Username: local.approver
+Password: Z2WYI6jAaE9MF9IXJDdeYMcI7Uw
+
+Subscription customer
+Username: local.customer
+Password: WJ7Eicma7aHYGnWDH5e-Y2gQSPg
+
+The ERP password was verified against the available November 20 IAM backup.
+The original Subscription database/volume is currently unavailable on Windows,
+and no Subscription database backup was found. Saved Console credentials require
+the matching restored database or explicitly approved isolated account recreation.
+Environment files alone do not restore users, records or plans.
